@@ -1,0 +1,66 @@
+CREATE DATABASE agenda;
+CREATE USER agenda WITH SUPERUSER CREATEROLE ENCRYPTED PASSWORD 'agenda';
+ALTER DATABASE agenda OWNER TO agenda;
+GRANT ALL PRIVILEGES ON DATABASE agenda TO agenda;
+
+psql -U agenda -W -d agenda
+
+CREATE TABLE FITXA (
+    DNI NUMERIC(10) NOT NULL,
+    NOM VARCHAR(30) NOT NULL,
+    COGNOMS VARCHAR(70) NOT NULL,
+    ADREÇA VARCHAR(60),
+    TELEFON VARCHAR(11) NOT NULL,
+    PROVINCIA VARCHAR(30),
+    DATA_NAIX DATE DEFAULT CURRENT_DATE,
+
+    CONSTRAINT PK_FITXA PRIMARY KEY (DNI)
+);
+
+--Comentaris
+    COMMENT ON COLUMN FITXA.DNI IS 'DNI de la persona';
+    COMMENT ON COLUMN FITXA.NOM IS 'Nom de la persona';
+    COMMENT ON COLUMN FITXA.COGNOMS IS 'Cognoms de la persona';
+    COMMENT ON COLUMN FITXA.ADREÇA IS 'Adreça de la persona';
+    COMMENT ON COLUMN FITXA.TELEFON IS 'Telèfon de la persona';
+    COMMENT ON COLUMN FITXA.PROVINCIA IS 'Provincia on resideix la persona';
+    COMMENT ON COLUMN FITXA.DATA_NAIX IS 'Data de naixement de la persona';
+
+-- Comprovar Comentaris: \d+ FITXA
+
+-- afegeixo una columna
+ALTER TABLE FITXA
+    ADD CP VARCHAR(5);
+
+-- canvio nom d'una columna
+ALTER TABLE FITXA
+    RENAME COLUMN CP TO CODI_POSTAL;
+
+-- canvio nom d'una constrain
+ALTER TABLE FITXA
+    RENAME CONSTRAINT PK_FITXA TO PrimKey_Fitxa;
+
+-- canvio longitud varchar
+ALTER TABLE FITXA
+ALTER CODI_POSTAL TYPE VARCHAR(10);
+
+--No sé com canviar-ho a numèric, faig drop i add
+ALTER TABLE FITXA
+DROP COLUMN Codi_Postal;
+
+ALTER TABLE FITXA
+ADD COLUMN Codi_Postal NUMERIC(5);
+
+-- afegeixo restricció
+ALTER TABLE FITXA
+ADD CONSTRAINT CK_UPPER_PROV CHECK (PROVINCIA = UPPER(PROVINCIA));
+
+-- esborro restricció
+ALTER TABLE FITXA
+DROP CONSTRAINT CK_UPPER_PROV;
+
+-- canvio nom de la taula
+ALTER TABLE FITXA RENAME TO ENTRADA;
+
+--elimino taula
+DROP TABLE ENTRADA;
