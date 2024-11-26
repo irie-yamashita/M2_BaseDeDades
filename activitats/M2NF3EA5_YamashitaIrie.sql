@@ -13,7 +13,7 @@ CREATE TABLE Persona(
     adreça VARCHAR(60),
     telefon VARCHAR(11),
 
-    CONSTRAINT PK_Persona PRIMARY KEY (primer_cognom)
+    CONSTRAINT PK_Persona PRIMARY KEY (DNI)
 );
 
 CREATE TABLE Alumne(

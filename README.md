@@ -4,6 +4,8 @@
 
 [Instal·lació PostgreSQL POrtable Linux - Classroom](https://classroom.google.com/c/NzA1MTYyMjgyNDU1/m/NzI2NDA1NDEzOTI1/details)
 
+[Instal·lació PostgreSQL Portable WINDOWS - Classroom](https://classroom.google.com/c/NzA1MTYyMjgyNDU1/m/NzI2NjI1NjE5OTgx/details)
+
 ### Iniciar PostgreSQl Portable
 Inicio programa:  
 `bash startSql.sh`
@@ -52,6 +54,8 @@ O també:
 ```sql
 CREATE TABLE REGION ();
 ```
+>[!NOTE]
+>Comprovació: `\dt`
 
 #### Omplir taula amb els ATRIBUTS:
 ```sql
