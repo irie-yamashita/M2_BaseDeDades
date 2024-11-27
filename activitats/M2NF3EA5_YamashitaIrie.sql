@@ -57,3 +57,8 @@ CREATE TABLE Modul(
     CONSTRAINT Modul_Aula_numero FOREIGN KEY (numero)  REFERENCES Aula(numero)
 );
 
+/*RESTRICCIONS: CHECK, DEFAULT i NOT NULL*/
+-- afegeixo restricció
+ALTER TABLE Persona
+ADD CONSTRAINT CK_Inicap_NomPers CHECK (nom = INITCAP(nom));
+
