@@ -6,6 +6,11 @@
 
 [Instal·lació PostgreSQL Portable WINDOWS - Classroom](https://classroom.google.com/c/NzA1MTYyMjgyNDU1/m/NzI2NjI1NjE5OTgx/details)
 
+```
+cd C:\Users\Usuario\Desktop\PostgreSQL\pgsql\bin  
+psql -U postgres
+```
+
 ### Iniciar PostgreSQl Portable
 Inicio programa:  
 `bash startSql.sh`
