@@ -121,6 +121,13 @@ NOM VARCHAR(60) NOT NULL,
 
 ```
 
+>[!WARNING]  
+> Si sense voler el passes una seqüència pots: BORRAR SEQ i tronar-la a cridar.  
+>```sql
+>DROP SEQUENCE PROVA_SQ;
+>```
+>Tornar-la a crear i fer un UPDATE al valor amb la seqüència.
+>
 
 ### TRANSACCIONS
 * #### BEGIN

@@ -15,6 +15,7 @@ Metacomandes comprovació: `\l \du \d \d+`
     - [Eliminar TAULA](#eliminar-taula)
     - [Afegir COLUMNA](#afegir-columna)
     - [Canviar nom COLUMNA](#canviar-nom-columna)
+    - [Eliminar COLUMNA]()
     - [Canviar nom CONSTRAIN](#canviar-nom-constrainrestricció)
     - [Modificar "especificació" tipus](#modificar-especificacio-tipus)
     - [Canviar tipus de dada](#canviar-tipus-de-dada)
@@ -163,6 +164,14 @@ ALTER TABLE FITXA
 ALTER TABLE FITXA
     RENAME COLUMN nomColumna TO CODI_POSTAL;
 ```
+
+* #### Eliminar COLUMNA
+```sql
+ALTER TABLE nomTaula
+DROP COLUMN nomColumna;
+```
+
+---
 
 * #### Modificar "especificació" tipus
 ```sql

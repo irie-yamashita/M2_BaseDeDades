@@ -53,5 +53,7 @@ Surto del client PostgreSQL
 
 Comencem a crear taules (següent apartat)
 
+### ELIMINAR
+`DROP DATABASE <database-name>;`
 
 

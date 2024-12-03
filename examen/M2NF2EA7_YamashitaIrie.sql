@@ -6,6 +6,7 @@ CREATE USER shop WITH SUPERUSER CREATEROLE ENCRYPTED PASSWORD 'shop';
 ALTER DATABASE shop OWNER TO shop;
 GRANT ALL PRIVILEGES ON DATABASE shop TO shop;
 
+\q
 -- comprovació: \l
 psql -U shop -W -d shop
 
@@ -208,8 +209,66 @@ MAXVALUE 99999;
 /*EXERCICI 2*/
 CREATE INDEX ship_address_index
 ON ORDERF(ship_address);
+        -- comprovació: \d ORDERF
 
-CREATE INDEX product_name_index
+CREATE UNIQUE INDEX product_name_index
 ON PRODUCT(product_name);
+        -- comprovació: \d PRODUCT
+
 
 /*EXERCICI 3*/
+/*a) Afegeix els següents camps a la taula ORDERF:*/
+ALTER TABLE ORDERF
+    ADD cost_ship DOUBLE PRECISION DEFAULT 1500;
+
+    ALTER TABLE ORDERF
+        ADD logistic_cia VARCHAR(100);
+
+ALTER TABLE ORDERF
+    ADD others VARCHAR(250);
+
+-- afegeixo restricció
+ALTER TABLE ORDERF
+ADD CONSTRAINT CK_logistic_cia CHECK (logistic_cia IN ('UPS', 'MRW', 'Post_Office', 'Fedex','TNT','DHL','Moldtrans','SEUR'));
+
+ -- comprovació: \d ORDERF
+
+ /*b) (0,5 punts). Elimina el camp others de la taula ORDERF.*/
+ALTER TABLE ORDERF
+DROP COLUMN others;
+
+
+/*EXERCICI 4*/
+BEGIN; --començo transaccions
+
+/*a)Modifica els valors del camp discount de la taula ORDER_DETAILS dels
+registres que la quantitat sigui més gran que 2.*/
+ALTER TABLE ORDER_DETAILS
+ADD CONSTRAINT CK_discount CHECK (discount > 2);
+--El nou descompte serà 7.5. 
+?????????
+--Comprova que s'ha efectuat el canvi.
+\d ORDER_DETAILS
+
+
+/*b) (0,25 punts) desfés els canvis que has fet en l'apartat anterior i comprova si s'han desfet.*/
+ROLLBACK;
+
+\d ORDER_DETAILS --comprovo
+
+/*c) (0,5 punts) Elimina els productes que tinguin un unitstock < 30 i fes que els canvis siguin permanents.*/
+DELETE FROM PRODUCT WHERE unitstock < 30;
+COMMIT; --canvis permanents
+
+/*d) Elimina la comanda de la taula ORDERF amb order_id = 4006.*/
+DELETE FROM ORDERF WHERE order_id = '4006';
+
+--no em deixa perquè ORDER_DETAILS té una foreing key que fa referència al camp order_id
+--Solució: borrar constraint i crear-la amb ON CASACADE DELETE
+ALTER TABLE ORDER_DETAILS
+DROP CONSTRAINT FK_DETAIL_ORD;
+
+ALTER TABLE ORDER_DETAILS
+ADD CONSTRAINT FK_DETAIL_ORD FOREIGN KEY (order_id) REFERENCES ORDERF(order_id) ON DELETE CASCADE;
+
+SELECT order_id FROM ORDERF; --comprovo
