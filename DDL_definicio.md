@@ -1,29 +1,28 @@
 # DDL
-
 Contingut: `CREATE, DROP, ALTER I RENAME`  
 Metacomandes comprovació: `\l \du \d \d+`
 
 ## ÍNDICE
 
-1. [Crear TAULES](#crear-taules)
+1. [CREATE](#crear-taules)
 2. [Omplir taula amb els ATRIBUTS](#omplir-taula-amb-els-atributs)
 3. [Restriccions (DEFAULT, NOT NULL)](#restriccions-inici)
-4. [CONSTRAINS PK i FK](#constriants-restriccions)
-5. [Restricció: CHECK](#check)
+4. [CONSTRAINS PK i FK](#constrians--restriccions)
+5. [Restriccions: CHECK](#check)
 6. [COMENTARIS](#comentaris)
 7. [ALTER](#alter)
-    - [Canviar nom taula](#canviar-nom-taula)
+    - [Canviar nom taula](#canivar-nom-taula)
     - [Eliminar TAULA](#eliminar-taula)
     - [Afegir COLUMNA](#afegir-columna)
     - [Canviar nom COLUMNA](#canviar-nom-columna)
-    - [Canviar nom CONSTRAIN](#canviar-nom-constrain)
+    - [Canviar nom CONSTRAIN](#canviar-nom-constrainrestricció)
     - [Modificar "especificació" tipus](#modificar-especificacio-tipus)
     - [Canviar tipus de dada](#canviar-tipus-de-dada)
     - [Afegir RESTRICCIÓ](#afegir-restriccio)
     - [Esborro RESTRICCIÓ](#esborro-restriccio)
 
 ---
-#### Crear TAULES  
+### Crear TAULES  
 
 ```sql
 CREATE TABLE IF NOT EXISTS REGION ();
@@ -49,22 +48,25 @@ CREATE TABLE FITXA (
 ```  
 
 >[!NOTE]
-> Hi ha diferent tipus pels atributs:
-    >* CHAR, VARCHAR(), TEXT
-    >* BOOLEAN
-    >* DATE, TIMESTAMP
-    >* NUMERIC -> INTEGER, DECIMAL NUMRIC(P,S)
+> Hi ha diferent tipus pels atributs:  
+    >* CHAR, VARCHAR(), TEXT  
+    >* BOOLEAN  
+    >* DATE, TIMESTAMP  
+    >* NUMERIC -> INTEGER, DECIMAL NUMERIC(P,S)  
+    Més info a: [ enllaç diapositiva 4](https://docs.google.com/presentation/d/1r-hXZWLp6z_aXMl97AiiOFVvT_6t8HuUHqNFj5t58aU/edit#slide=id.gb7c51ac3b8_0_3)
+
 
   
 >[!WARNING]
 > Si posem `NUMERIC (8,2)` estem dient que acceptem un num de **8 xifres** i **2 decimals**.
 
 ---
-#### RESTRICCIONS INICI
-Quan estem "definint" els atributs, hi ha 2 restriccions qu podem posar:
-* NULL: accepta valors nulls (no resposta) 
-* NOT NULL: NO accepta valors nulls,obliga a introduir un valor
-* DEFAULT: defineix un valor per defecte per si no li fem un insert
+### RESTRICCIONS INICI
+Quan estem "definint" els atributs, hi ha 3 restriccions que podem posar:
+* `NULL`: accepta valors nulls (no resposta) 
+* `NOT NULL`: NO accepta valors nulls,obliga a introduir un valor
+* `DEFAULT`: defineix un valor per defecte per si no li fem un insert
+* `UNIQUE`: el valor introduit no es pot repetir
 
 Exemple:
 ```sql
@@ -77,7 +79,7 @@ Nom varchar(30) DEFAULT 'Irie'
 
 
 ---
-#### CONSTRIANS / RESTRICCIONS
+### CONSTRIANS / RESTRICCIONS
 * PRIMARY KEY  
 Nomenclatura: PK_NomTaula
 ```sql
@@ -92,9 +94,10 @@ CONSTRAINT FK_ALUMNE_PERSONA_nom FOREIGN KEY (nomAtribut) REFERENCES TAULAFOREIN
 ```
 
 >[!NOTE]  
-> `ON DELETE CASCADE`
+> `ON DELETE CASCADE` al final de la FK per si borrem una dada es borri a tots llocs (a la taula actual i a la que fa referència)
+
 ---
-#### CHECK
+### CHECK
 Nomenclatura: CK_nomAtribut_descripció
 ```sql
 CONSTRAINT CK_preuV_sup CHECK (preuVenda >0),
@@ -115,80 +118,80 @@ Tipus:
 ---
 
 #### COMENTARIS
-* Comentari a la taula:
+* Comentari a la **taula**:
 ```sql
 COMMENT ON COLUMN TAULA IS 'comentari que vull posar';
 ```
 
-* Comentari a columna (atribut):
+* Comentari a **columna** (atribut):
 ```sql
 COMMENT ON COLUMN TAULA.COLUMNA IS 'comentari que vull posar';
 ```
 
->[!NOTE]  
+>[!TIP]  
 > Per veure el comentari: `\d+ nomTaula`
 
 ---
 
 
-#### ALTER
+### ALTER
 
-* Canivar nom taula
+* #### Canivar nom taula
 ```sql
 -- canvio nom de la taula
-ALTER TABLE FITXA RENAME TO ENTRADA;
+ALTER TABLE nomTaula RENAME TO nomNou;
 ```
-* Eliminar TAULA
+* #### Eliminar TAULA
 ```sql
 --elimino taula
-DROP TABLE ENTRADA;
+DROP TABLE nomTaula;
 ```
 
 ---
 
-* Afegir COLUMNA
+* #### Afegir COLUMNA
 ```sql
 -- afegeixo una columna
 ALTER TABLE FITXA
-    ADD CP VARCHAR(5);
+    ADD nomColumna VARCHAR(5);
 
 ```
 
-* Canviar nom COLUMNA
+* #### Canviar nom COLUMNA
 ```sql
 -- canvio nom d'una columna
 ALTER TABLE FITXA
-    RENAME COLUMN CP TO CODI_POSTAL;
+    RENAME COLUMN nomColumna TO CODI_POSTAL;
 ```
 
-* Modificar "especificació" tipus
+* #### Modificar "especificació" tipus
 ```sql
 -- canvio longitud varchar
 ALTER TABLE FITXA
 ALTER CODI_POSTAL TYPE VARCHAR(10);
 ```
 
-* Canivar tipus de dada
+* #### Canivar tipus de dada
 ```sql
 ALTER TABLE fitxa ALTER COLUMN Codi_Postal TYPE NUMERIC USING Codi_Postal::NUMERIC(5);
 ```
 
 ---
-* Afegir RESTRICCIÓ
+* #### Afegir RESTRICCIÓ
 ```sql
 -- afegeixo restricció
 ALTER TABLE FITXA
 ADD CONSTRAINT CK_UPPER_PROV CHECK (PROVINCIA = UPPER(PROVINCIA));
 ```
 
-* Canviar nom CONSTRAIN/RESTRICCIÓ
+* #### Canviar nom CONSTRAIN/RESTRICCIÓ
 ```sql
 -- canvio nom d'una constrain
 ALTER TABLE FITXA
     RENAME CONSTRAINT PK_FITXA TO PrimKey_Fitxa;
 ```
 
-* Esborro RESTRICCIÓ
+* #### Esborro RESTRICCIÓ
 ```sql
 -- esborro restricció
 ALTER TABLE FITXA
@@ -197,7 +200,7 @@ DROP CONSTRAINT CK_UPPER_PROV;
 
 ---
 
-* Afegir DEFAULT o NOT NULL  
+* #### Afegir DEFAULT o NOT NULL  
 DEFAULT
 ```sql
 ALTER TABLE nomTaula

@@ -1,5 +1,6 @@
 # DML
-Contingut:  `INSERT, UPDATE, DELETE i SELECT`
+Contingut:  `INSERT, UPDATE, DELETE i SELECT`  
+Comprovació: `SELECT * FROM nomTaula;` o `SELECT nomColumna FROM nomTaula WHERE (condició)`
 
 ## ÍNDEX
 1. [INSERT](#insert)
@@ -38,10 +39,25 @@ Comprovació: `SELECT * FROM nomTaula`
 
 
 ### SELECT
+Em serveix per consultar valors inserits:
+* Tota la BASE de DADES
+```sql
+SELECT *;
+```
+* Tots els valors TAULA
 ```sql
 SELECT * FROM nomTaula;
 ```
 
+* Tots els valors d'una COLUMNA
+```sql
+SELECT nomColumna FROM nomTaula;
+```
+>[!NOTE]  
+>També pots mirar dos columnes a l'hora posant `SELECT nomColumna1,nomColumna2 FROM nomTaula;`
+
+
+* VALOR concret filtrada (amb WHERE)
 ```sql
 SELECT nomColumna FROM nomTaula WHERE atribut='valor';
 ```
@@ -54,11 +70,13 @@ Comprovació: `SELECT nomColumna FROM nomTaula`
 
 ### BORRAR COSES
 
-* **BUIDAR TAULA**:  TRUNCATE TABLE  
+* #### BUIDAR TAULA
+`  TRUNCATE TABLE  `  
 ```sql
 TRUNCATE TABLE nomTaula;
 ```
 o també:
+`  DELETE  `  
 ```sql
 DELETE FROM nomTaula;
 ```
@@ -66,13 +84,15 @@ DELETE FROM nomTaula;
 > No és el mateix que `DROP`. DROP borra TOT,  estructura i valors de la taula.
 
 
-* **BUIDAR FILA**:  DELETE  
+* #### BUIDAR FILA
+`  DELETE  `  
 Normalment triem la `primary key` en el WHERE perquè així no es repeteix.
 ```sql
 DELETE FROM nomTaula WHERE nomColumna = "valorPK";
 ```
 
-* **BUIDAR VALOR**:  UPDATE  
+* #### BUIDAR VALOR
+`  UPDATE  `  
 En comptes de `NULL` pots utilitzar `DEFAULT`.
 ```sql
 UPDATE nomTaula SET nomColumna = NULL WHERE nomColumna = "valorPK" ;

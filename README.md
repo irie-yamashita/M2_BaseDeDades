@@ -10,6 +10,12 @@
 cd C:\Users\Usuario\Desktop\PostgreSQL\pgsql\bin  
 psql -U postgres
 ```
+>[!WARNING]  
+>Si no pots iniciar usuari prova de fer això:
+>```sql
+>   psql -U  irie.yamashita.7e8 -d postgres
+>   \q
+>```
 
 ### Iniciar PostgreSQl Portable
 Inicio programa:  
