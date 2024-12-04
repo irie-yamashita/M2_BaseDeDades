@@ -45,7 +45,7 @@ Hi ha **2** tipus d'ÍNDEXS:
 **CREATE Índexs:**  
 Normal:
 ```sql
-CREATE INDEX Cognom1_index
+CREATE INDEX idx_Cognom1
 ON PERSONA(COGNOM1);
 ```
 

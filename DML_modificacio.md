@@ -88,13 +88,13 @@ DELETE FROM nomTaula;
 `  DELETE  `  
 Normalment triem la `primary key` en el WHERE perquè així no es repeteix.
 ```sql
-DELETE FROM nomTaula WHERE nomColumna = "valorPK";
+DELETE FROM nomTaula WHERE nomColumna = 'valorPK';
 ```
 
 * #### BUIDAR VALOR
 `  UPDATE  `  
 En comptes de `NULL` pots utilitzar `DEFAULT`.
 ```sql
-UPDATE nomTaula SET nomColumna = NULL WHERE nomColumna = "valorPK" ;
+UPDATE nomTaula SET nomColumna = NULL WHERE nomColumna = 'valorPK';
 ```
 

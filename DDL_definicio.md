@@ -108,9 +108,9 @@ Tipus:
 
 * Valors concrets: `CHECK (nomAtribut IN ('valor1', 'valor2', 'valor3')`
 
-* OR || : `CHECK (nomAtribut IN ('C', 'B')`
+* OR || : `CHECK (nomAtribut IN ('C', 'B'))`
 
-* MAJUS : ` CHECK (nomAtribut = UPPER(nomAtribut)`  
+* MAJUS : ` CHECK (nomAtribut = UPPER(nomAtribut))`  
 
 * Primera lletra MAJUS:`CHECK (nomAtribut = INITCAP(nomAtribut)),`
 
