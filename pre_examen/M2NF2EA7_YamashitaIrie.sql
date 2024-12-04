@@ -243,10 +243,10 @@ BEGIN; --començo transaccions
 
 /*a)Modifica els valors del camp discount de la taula ORDER_DETAILS dels
 registres que la quantitat sigui més gran que 2.*/
-ALTER TABLE ORDER_DETAILS
-ADD CONSTRAINT CK_discount CHECK (discount > 2);
 --El nou descompte serà 7.5. 
-?????????
+UPDATE ORDER_DETAILS
+SET discount= 7.5 WHERE quantity > 2;
+
 --Comprova que s'ha efectuat el canvi.
 \d ORDER_DETAILS
 

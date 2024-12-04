@@ -43,18 +43,39 @@ VALUES (CURRVAL('PROVA_SQ'),'Amber');
 
 
 /*MISSATGE ERROR*/
-PK: -- el valor del "nomCamp" ja ha estat introduit abans, i això no pot ser perquè "nomCamp" és clau primària i ha de ser única, no es pot repetir.
+PK: -- El valor de la clau primària ja existeix, està duplicada.
 
-FK: -- el valor del camp "nomCamp" és una foreing key i fa referència a un valor que no existeix a la taula referenciada (taula pare)
+FK: -- El valor que estem intentant inserir a "nomCamp" és una foreing key i fa referència a un valor que no existeix. 
 
-CK: -- el valor del "nomCamp" no compleix amb la restricció "nom_ck" de la taula "nomTaula".
-
-NOT NULL: -- el valor del camp "nomCamp" no pot ser NULL, ja que té una restricció not-null.
-
-DELETE ON CASCADE: -- no em deixa borrar-ho perquè el camp "nomCamp" on es troba el valor, té una restricció foreing key que fa referència a una altra taula.
-
---Solució: borrar constraint i crear-la amb ON CASACADE DELETE
+--No la podem inserir perqué el order_id 4003 no existeix.
 
 
+CK: -- el valor del "nomCamp" no compleix amb la restricció "nom_ck" de la taula "nomTaula". 
+
+-- La data de shipped_date és inferior a la data de order_date.
+-- Dona error per escriure ‘EUROP’ en comptes de 'EUROPA'
+
+NOT NULL: -- El valor del camp "nomCamp" no pot ser NULL, ja que té una restricció not-null.
+
+DELETE ON CASCADE: -- no em deixa eliminar perquè el valor "valor" està referenciat a una altra taula (nomTaula).
+
+--Solució: borrar constraint i crear-la amb l'opció ON CASACADE DELETE
+ALTER TABLE ORDER_DETAILS
+DROP CONSTRAINT fk_orderdetails_orderf;
+
+ALTER TABLE ORDER_DETAILS
+DROP CONSTRAINT fk_orderdetails_orderf;
+
+-- també tenim ON UPDATE CASCADE
+
+
+### Data format Espanya
+```sql
+-- Per canviar format data a Europeu posar: dd/mm/aaaa
+SET DATESTYLE TO PostgreSQL,European;
+SHOW datestyle;
+
+-- Si volem canviar a model altre: SET DATESTYLE TO ISO;
+```
 
 
