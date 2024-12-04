@@ -17,10 +17,10 @@ Metacomandes comprovació: `\l \du \d \d+`
     - [Canviar nom COLUMNA](#canviar-nom-columna)
     - [Eliminar COLUMNA]()
     - [Canviar nom CONSTRAIN](#canviar-nom-constrainrestricció)
-    - [Modificar "especificació" tipus](#modificar-especificacio-tipus)
-    - [Canviar tipus de dada](#canviar-tipus-de-dada)
-    - [Afegir RESTRICCIÓ](#afegir-restriccio)
-    - [Esborro RESTRICCIÓ](#esborro-restriccio)
+    - [Modificar "especificació" tipus](#modificar-tamany-tipus)
+    - [Canviar tipus de dada](#canivar-tipus-de-dada)
+    - [Afegir RESTRICCIÓ](#afegir-restricció)
+    - [Esborro RESTRICCIÓ](#esborro-restricció)
 
 ---
 ### Crear TAULES  
@@ -173,11 +173,11 @@ DROP COLUMN nomColumna;
 
 ---
 
-* #### Modificar "especificació" tipus
+* #### Modificar tamany tipus
 ```sql
 -- canvio longitud varchar
 ALTER TABLE FITXA
-ALTER CODI_POSTAL TYPE VARCHAR(10);
+ALTER COLUMN CODI_POSTAL TYPE VARCHAR(10);
 ```
 
 * #### Canivar tipus de dada

@@ -6,6 +6,9 @@ Enllaç activitat: [M2NF3_EA6](activitats/M2NF3EA6_YamashitaIrie.sql)
 1. [INDEX](#index)
 2. [VISTES](#vistes)
 3. [SEQUENCE](#sequence)
+    - [Borrar seqüència](#borrar-sequence)
+    - [Default](#sequence-per-defecte)
+    - [Serial](#serial)
 4. [TRANSACCIONS](#transaccions)
     - [BEGIN](#begin)
     - [COMMIT](#commit)
@@ -100,17 +103,31 @@ MAXVALUE 999999;
 >[!TIP]  
 >Compravació: `\d`
 
-* MIRAR valor seqüència:
-```sql
---Mirem quin valor té la seqüència
-SELECT CURRVAL('ARXIUID_SEQ');
-```
-
 * INSERIR seqüència:  
 ```sql
 INSERT INTO ARXIU (ID,NOM) VALUES (NEXTVAL('ARXIUID_SEQ'), 'Empreses');
 ```
+>[!TIP]  
+>Compravació: `SELECT * FROM nomTaula;`
 
+* MIRAR valor seqüència:
+```sql
+--Mirem quin valor té la seqüència (has de fer mínim un NEXTVAL())
+SELECT CURRVAL('ARXIUID_SEQ');
+```
+
+* #### BORRAR sequence
+Si sense voler et passes una seqüència pots: BORRAR SEQ i tronar-la a cridar.  
+```sql
+DROP SEQUENCE PROVA_SQ;
+```
+
+>Tornar-la a crear i fer un UPDATE al valor amb la seqüència.
+```sql
+UPDATE nomTaula SET nomColumna = NEXTVAL('ARXIUID_SEQ') WHERE nomColumna = "valorPK" ;
+```
+
+* #### SEQUENCE per DEFECTE
 >[!NOTE]  
 >Podem posar una seqüència per **DEFECTE**:
 ```sql
@@ -121,13 +138,22 @@ NOM VARCHAR(60) NOT NULL,
 
 ```
 
+* #### SERIAL
+També puc crear un camp de tipus SERIAL.
+```sql
+CREATE TABLE ARXIU (
+ID SERIAL,
+NOM VARCHAR(60) NOT NULL,
+PRIMARY KEY ( ID )
+);
+```
+
 >[!WARNING]  
-> Si sense voler el passes una seqüència pots: BORRAR SEQ i tronar-la a cridar.  
->```sql
->DROP SEQUENCE PROVA_SQ;
->```
->Tornar-la a crear i fer un UPDATE al valor amb la seqüència.
->
+> A l'hora de fer l'INSERT, l'**ignorem**, com si no estigués:
+
+```sql
+INSERT INTO ARXIU (NOM) VALUES ('Empreses');
+```
 
 ### TRANSACCIONS
 * #### BEGIN

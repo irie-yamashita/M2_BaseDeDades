@@ -87,7 +87,7 @@ COMMENT ON COLUMN ORDER_DETAILS.discount IS 'Descompte';
 /*b) Comprova que les taules s'han creat correctament.*/
 
     --- comprovaciótotes les taules
-    \d+
+    \dt+
 
     --- comprovaciótotes de cada una
     \d+ ORDERF
