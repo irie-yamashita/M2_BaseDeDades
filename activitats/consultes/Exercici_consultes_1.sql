@@ -48,3 +48,21 @@ WHERE to_char(hire_date,'YYYY') = '1998';
 
 -- alternativa: EXTACT(YEAR FROM hire_date)
 
+/*7. Crea una consulta per mostrar el cognom i el càrrec (JOB_ID) de tots els empleats que no
+tenen director assignat.*/
+SELECT last_name, job_id
+FROM employees
+WHERE manager_id IS NOT Null;
+
+/*8. Crea una consulta per a mostrar el cognom, el salari i la comissió de tots els empleats que
+tenen comissions. Ordenar les dades en ordre descendent de salaris i comissions.*/
+SELECT last_name, salary, commission_pct
+FROM employees
+WHERE commission_pct IS NOT Null;
+
+
+/*9. Crea una consulta per mostrar el cognom de tots els empleats que tingui una a como tercera
+lletra (en aquest camp cognom).*/
+
+
+/**/
