@@ -11,7 +11,7 @@ WHERE salary > 12000;
 
 /*2. Crea una consulta per a mostrar el cognom de l’empleat i el número de departament
 d’empleat amb id 176.*/
-SELECT las_name, department_id
+SELECT last_name, department_id
 FROM EMPLOYEE
 WHERE employee_id = 176;
 
@@ -61,8 +61,27 @@ FROM employees
 WHERE commission_pct IS NOT Null;
 
 
-/*9. Crea una consulta per mostrar el cognom de tots els empleats que tingui una a como tercera
+/*9. Crea una consulta per mostrar el cognom de tots els empleats que tingui una 'a' com tercera
 lletra (en aquest camp cognom).*/
+SELECT last_name
+FROM employees
+WHERE last_name LIKE '__a%';
+
+-- guió baix és per 1 char.
+-- % per x chars.
 
 
-/**/
+/*10. Crea una consulta per mostrar el cognom de tots els empleats que tinguin una a i una e (en aquest camp cognom).*/
+SELECT last_name
+FROM employees
+WHERE last_name LIKE '%a%' AND last_name LIKE '%e%';
+
+--COMPTE: has de tornar a posr last_name LIKE després de AND.
+
+/*11. Crea una consulta per a mostrar el cognom, el càrrec (JOB_ID) i el salari de tots els
+empleats on els càrrecs siguin representants de vendes (AC_ACCOUNT) o encarregats de
+stock (AD_ASST) i els salaris no siguin iguals a 2500, 3500 ni 7000.*/
+SELECT e.last_name, e.job_id, e.salary
+FROM employees e
+JOIN job_history j ON e.job_id = j.job_id
+WHERE (j.job_id = 'AC_ACCOUNT' OR j.job_id = 'AD_ASST') AND e.salary NOT IN (2500,3500,7000);
