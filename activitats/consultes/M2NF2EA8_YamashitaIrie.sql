@@ -78,7 +78,7 @@ WHERE last_name LIKE '%a%' AND last_name LIKE '%e%';
 
 /*11. Crea una consulta per a mostrar el cognom, el càrrec (JOB_ID) i el salari de tots els
 empleats on els càrrecs siguin representants de vendes (AC_ACCOUNT) o encarregats de
-stock (AD_ASST) i els salaris no siguin iguals a 2500, 3500 ni 7000.* /
+stock (AD_ASST) i els salaris no siguin iguals a 2500, 3500 ni 7000.*/
 SELECT e.last_name, e.job_id, e.salary
 FROM employees e
 JOIN job_history j ON e.job_id = j.job_id

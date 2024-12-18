@@ -1,5 +1,9 @@
 /*EA9. Funcions i Agrupacions*/
 
+/* CORRECCIONS (importants)
+    - DISTINCT
+*/
+
 /*1. Mostra el nom i cognom de tots els empleats. S'han de mostrar amb la primera lletra en
 majúscula i la resta en minúscules.*/
 SELECT initcap(first_name), initcap(last_name)
@@ -11,12 +15,18 @@ SELECT *
 FROM employees
 WHERE to_char(hire_date,'MM') = '03';
 
--- quan posa mostra empleats, és només el nom o tot?
+-- quan posa mostra empleats, és només el nom o tot? -> tot
+-- CORRECCIÓ: WHERE to_char(hire_date,'MON') = 'MAY';
 
 
 /*3. Mostra els oficis (job_title) diferents que hi ha a la base de dades.*/
 SELECT job_title
 FROM jobs;
+
+    -- CORRECCIÓ: SELECT DISTINCT job_title FROM jobs;
+        SELECT DISTINCT job_title
+        FROM jobs;
+
 
 /*4. Calcula quants empleats hi ha en cada departament.*/
 SELECT department_id, count(*)
