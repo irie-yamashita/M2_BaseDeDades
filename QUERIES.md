@@ -27,6 +27,9 @@ WHERE salary > 1000;
 * #### LIKE (equals)
 Amb els textos no podem utilitzar el `=`, llavors hem d'usar el `LIKE`:
 
+>[!TIP]
+> Pots utilitzar `ILIKE` que és el mateix, però no és **case sensitive**.
+
 
 * #### BETWEEN AND  
     * **Números**
@@ -122,3 +125,12 @@ SELECT e.first_name, d.department_name  --!!! He d'especificar de quina taula ve
 FROM employees e, departments d         --FROM de 2 taules, li poso una abreviatura
 WHERE d.department_id=e.department_id;  --CONDICIÓ: sobre la clau forana
 ```
+
+
+## 19/12/2024
+/*APUNTS*/
+
+  lenght(last_name)>6
+
+**REFLEXIVES**  
+/* 10.	Mostra el nom i els cognoms del cap de David Austin.*/
