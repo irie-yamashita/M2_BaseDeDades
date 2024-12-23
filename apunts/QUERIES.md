@@ -13,7 +13,14 @@
     + [BETWEEN AND](#between-and)
     + [IN](#in-and-and-and)
     + [IS NULL](#is-null)
-  * []()
+  * [Operadors matemàtics](#operadors-matemàtics)
+* [FUNCIONS ()](#funcions)
+    + [Manipulació de TEXT](#manipulació-text)
+      + [LOWER, UPPER](#lower-i-upper)
+      + [SUBSTRING, POSITION, TRIM, LENGTH, REPLACE...](#manipulació-de-text)
+    + [Manipulació numèrica (round, trunc...)](#manipulació-numèrica)
+
+
 ## INTRODUCCIÓ
 Una consulta bàsica conté:
 + `SELECT`: per seleccionar les dades que es mostraran
@@ -47,7 +54,7 @@ Aquests són tots els operadors de comparació:
 |-------------------------------------|
 |      `=, >, <, >=, <=, !=, < >`     |
 |  `IN, NOT IN, BETWEEN, NOT BETWEEN` |
-|            `LIKE` `ILIKE`           |
+|     `DISTINCT` `LIKE` `ILIKE`       |
 |             `IS NULL`               |
 
 
@@ -117,9 +124,13 @@ Per quan volem triar aquelles dades que són o no nul·les:
   WHERE commission_pct IS NOT Null;
   ```
 
+### Operadors MATEMÀTICS
+* `+ , -, *, /`
+* mòdul: `%`
+* elevat, arrel quadrada, arrel cúbica: `^, |/, ||/`
 
 ## FUNCIONS
-### Manipulació de CASE
+### Manipulació TEXT
 * #### LOWER i UPPER
 Funció per posar en minúscules o majúscules una dada. Pot estar en el SELECT o en el WHERE:  
 
@@ -129,19 +140,30 @@ Funció per posar en minúscules o majúscules una dada. Pot estar en el SELECT 
   ```sql
   WHERE LOWER(last_name) LIKE 'lopez';
   ```
-### Manipulació de TEXT
-| Funció                                | Retorna  |  Resultat |
-|---                                    |---       |---        |
-|  **substring**('Thomas' from 1 for 3) |   text   | Tho       |
-|  substr ('Thomas', 3)                 |   text   | omas      |
-|  strpos ('high', 'ig')                |    int   | 4         |
-|  repeat ('Pg', 4)                     |   |   |
-|  rpad ('hi', 5, 'xy')                 |   |   |
-|  **length** ('jose)                   |   |   |
-|  **length** ('jose)                   |   |   |
-|  **length** ('jose)                   |   |   |
-|  **length** ('jose)                   |   |   |
-* #### Substring
+### Altres
+| Funció                                | Retorna  |  Resultat | Explicació              |
+|---                                    |---       |---        |---                      |
+|  **SUBSTRING**('Thomas' from 1 for 3) |   text   | Tho       | Extreure text a partir d'una posició concreta (inici i fi) |
+|  SUBSTR ('Thomas', 3)                 |   text   | omas      | Igual que *substring*, però només amb posició inicial   |
+|  **LENGTH** ('jose')                  |   int    | 4         | Equivalent a .length() de String |
+|  STRPOS ('high', 'ig')                |   int    | 2         | Equivalent a *indexOf* |
+|  POSITION('ana' IN 'maria')           |   int    | -1        | Equivalent a *indexOf* |
+|  REPEAT ('Pg', 4)                     |   text   | PgPgPgPg  | Repeteix un text *n* cops |
+|  RPAD ('hi', 5, '*')                  |   text   | hi***     | Omple un text amb un caràcter (o més), fins arribar a la *size* especificada |
+|  REPLACE ('colomer', 'o', '#')        |   text   | c#l#mer | Reemplaça totes les ocurrències d'un text per un altre. |
+|  TRIM('   joan    ')                  |   text   | joan    | Treu espais inicials i finals d'un text |
+
+>[!WARNING]
+> Sembla que aquí els índexs dels texts comencen per 1!!!
+
+### Manipulació NUMÈRICA
+| Funció             | Retorna  |  Resultat | Explicació                        |
+|---                 |---       |---        |---                                |
+|  ROUND (42.438, 2) |   int    | 42.44     | Arrodoneix                        |
+|  TRUNC (42.438, 2) |   int    | 42.43     | No arrodoneix, simplement talla   |
+|  MOD (9, 4)        |   int    | 1         | Equivalent a **%**, el residu     |
+
+**Altres:** `factorial(), log(), pi(), sqrt()`...  
 
 
 ORDER BY
