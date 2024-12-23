@@ -3,7 +3,11 @@
 [Apunts senyor](https://es.slideshare.net/nicola51980/)  
 
 ## INTRODUCCIÓ
-Una consulta bàsica conté: `SELECT`, `FROM` (i `WHERE`).
+Una consulta bàsica conté:
++ `SELECT`: per seleccionar les dades que es mostraran
++ `FROM`: per indicar de quina o quines taules són les dades
++ `WHERE`: la condició
+
 
 ```sql
 SELECT *
@@ -18,17 +22,32 @@ WHERE salary > 1000;
 > `*` -> selecciona tot de la taula
 
 ## CONSULTES BÀSIQUES
+### Operadors de COMPARACIÓ
+Aquests són tots els operadors de comparació:  
 
-* #### =
+|      **Operadors de COMPARACIÓ**    |
+|-------------------------------------|
+|      `=, >, <, >=, <=, !=, < >`     |
+|  `IN, NOT IN, BETWEEN, NOT BETWEEN` |
+|            `LIKE`                   |
+
+
+
+* #### Igual =
     ```sql
     WHERE employee_id = 176;
     ```
 
-* #### LIKE (equals)
+* #### LIKE (.equals)
 Amb els textos no podem utilitzar el `=`, llavors hem d'usar el `LIKE`:
 
 >[!TIP]
 > Pots utilitzar `ILIKE` que és el mateix, però no és **case sensitive**.
+
+* #### > o <
+    ```sql
+    WHERE salary > 12000;
+    ```
 
 
 * #### BETWEEN AND  
