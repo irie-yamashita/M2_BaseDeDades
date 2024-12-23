@@ -1,12 +1,24 @@
 # QUERIES
 
-[Apunts senyor](https://es.slideshare.net/nicola51980/)  
+[Apunts internet](https://es.slideshare.net/nicola51980/)  
 
+## ÍNDEX
+* [Introducció](#introducció)
+* [Consultes bàsiques](#consultes-bàsiques)
+  * [Operadors lògics (AND, OR, NOT)](#operadors-lògics)
+  * [Operadors de comparació](#operadors-de-comparació)
+    + [=, >, <, >=, <=, !=, < >](#operadors-bàsics)
+    + [LIKE](#like-equals)
+        + [Patrons de búsqueda: % i _](#patrons-de-búsqueda--i-_)
+    + [BETWEEN AND](#between-and)
+    + [IN](#in-and-and-and)
+    + [IS NULL](#is-null)
+  * []()
 ## INTRODUCCIÓ
 Una consulta bàsica conté:
 + `SELECT`: per seleccionar les dades que es mostraran
 + `FROM`: per indicar de quina o quines taules són les dades
-+ `WHERE`: la condició
++ `WHERE`: la condició, limita les dades a seleccionar
 
 
 ```sql
@@ -22,6 +34,12 @@ WHERE salary > 1000;
 > `*` -> selecciona tot de la taula
 
 ## CONSULTES BÀSIQUES
+[Apunts Consultes Bàsiques](https://es.slideshare.net/nicola51980/postgresql-leccin-2-restringiendo-y-ordenando-los-datos-retornados-por-el-comando-select)
+
+### Operadors lògics
+Per poder fer **condicions múltiples** necessito utilitzar els **operadors lògics**:  `AND, OR i NOT`
+
+
 ### Operadors de COMPARACIÓ
 Aquests són tots els operadors de comparació:  
 
@@ -29,25 +47,42 @@ Aquests són tots els operadors de comparació:
 |-------------------------------------|
 |      `=, >, <, >=, <=, !=, < >`     |
 |  `IN, NOT IN, BETWEEN, NOT BETWEEN` |
-|            `LIKE`                   |
+|            `LIKE` `ILIKE`           |
+|             `IS NULL`               |
 
 
 
-* #### Igual =
-    ```sql
-    WHERE employee_id = 176;
-    ```
+* #### **Operadors bàsics**
+`=, >, <, >=, <=, !=, < >`  
+Funcionen igual que a programació:    
+  ```sql
+  WHERE employee_id = 176;
+  ```
 
-* #### LIKE (.equals)
+  ```sql
+  WHERE salary > 12000;
+  ```
+
+
+* #### **LIKE (.equals)**
 Amb els textos no podem utilitzar el `=`, llavors hem d'usar el `LIKE`:
+
+  ```sql
+  WHERE last_name LIKE 'Lopez';
+  ```
 
 >[!TIP]
 > Pots utilitzar `ILIKE` que és el mateix, però no és **case sensitive**.
 
-* #### > o <
-    ```sql
-    WHERE salary > 12000;
-    ```
+  * ##### **Patrons de búsqueda % i _**
+  És molt comú utilitzar patrons de búsqueda `%` i `_` a l'hora de d'utilitzar el `LIKE`:
+  ```sql
+  -- noms que tinguin com a SEGONA lletra una 'a'
+  WHERE first_name LIKE '_a%';
+  ```
+  > El `_` (guió baix) indica qualsevol caràcter, el `%` (comodín) és qualsevol cosa (d'un caràcter a molts).
+
+
 
 
 * #### BETWEEN AND  
@@ -64,18 +99,49 @@ Amb els textos no podem utilitzar el `=`, llavors hem d'usar el `LIKE`:
 > També puc fer un `NOT BETWEEN x AND x`
 
 * #### IN (and and and)
-Per evitar fer:  
-```sql
-WHERE department_id = 20 AND department_id = 50 AND department_id = 60;
-```
-Puc fer un `IN`:    
-```sql
-WHERE department_id IN(20,50,60);
-```
+  Per evitar fer:  
+  ```sql
+  WHERE department_id = 20 AND department_id = 50 AND department_id = 60;
+  ```
+  Puc fer un `IN`:    
+  ```sql
+  WHERE department_id IN(20,50,60);
+  ```
 
 > [!NOTE]  
 > També puc fer un `NOT IN()`
 
+* #### IS NULL
+Per quan volem triar aquelles dades que són o no nul·les:
+  ```sql
+  WHERE commission_pct IS NOT Null;
+  ```
+
+
+## FUNCIONS
+### Manipulació de CASE
+* #### LOWER i UPPER
+Funció per posar en minúscules o majúscules una dada. Pot estar en el SELECT o en el WHERE:  
+
+  ```sql
+  SELECT UPPER(last_name), LOWER(first_name); -- LÓPEZ maria
+  ```
+  ```sql
+  WHERE LOWER(last_name) LIKE 'lopez';
+  ```
+### Manipulació de TEXT
+| Funció                                | Retorna  |  Resultat |
+|---                                    |---       |---        |
+|  **substring**('Thomas' from 1 for 3) |   text   | Tho       |
+|  substr ('Thomas', 3)                 |   text   | omas      |
+|  strpos ('high', 'ig')                |    int   | 4         |
+|  repeat ('Pg', 4)                     |   |   |
+|  rpad ('hi', 5, 'xy')                 |   |   |
+|  **length** ('jose)                   |   |   |
+|  **length** ('jose)                   |   |   |
+|  **length** ('jose)                   |   |   |
+|  **length** ('jose)                   |   |   |
+* #### Substring
 
 
 ORDER BY
@@ -87,7 +153,7 @@ COALESCE
 
 ---
 
-**FUNCIONS**: max, min, average, count, sum
+**FUNCIONS**: max, min, average, count, sumS
 
 ---
 
