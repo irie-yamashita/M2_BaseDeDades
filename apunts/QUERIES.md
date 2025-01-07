@@ -16,7 +16,7 @@
   * [Operadors matemàtics](#operadors-matemàtics)
 * [FUNCIONS ()](#funcions)
     + [Manipulació de TEXT](#manipulació-text)
-      + [LOWER, UPPER](#lower-i-upper)
+      + [LOWER, UPPER, INITCAP](#lower-upper-i-initcap)
       + [SUBSTRING, POSITION, TRIM, LENGTH, REPLACE...](#manipulació-de-text)
     + [Manipulació numèrica (round, trunc...)](#manipulació-numèrica)
 
@@ -131,7 +131,7 @@ Per quan volem triar aquelles dades que són o no nul·les:
 
 ## FUNCIONS
 ### Manipulació TEXT
-* #### LOWER i UPPER
+* #### LOWER, UPPER i INITCAP
 Funció per posar en minúscules o majúscules una dada. Pot estar en el SELECT o en el WHERE:  
 
   ```sql
@@ -139,6 +139,10 @@ Funció per posar en minúscules o majúscules una dada. Pot estar en el SELECT 
   ```
   ```sql
   WHERE LOWER(last_name) LIKE 'lopez';
+  ```
+    ```sql
+  SELECT initcap(first_name), initcap(last_name)
+  FROM employees;
   ```
 ### Altres
 | Funció                                | Retorna  |  Resultat | Explicació              |
