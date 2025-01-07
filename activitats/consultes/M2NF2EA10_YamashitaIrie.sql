@@ -1,19 +1,29 @@
+/*EA10. Consultes multitaula*/
+
 -- 1
 SELECT d.department_name, e.first_name, e.last_name
 FROM departments d, employees e
+WHERE d.department_id = e.department_id AND
+      d.department_name LIKE 'Sales';
+
+/** Versió amb JOIN:
+SELECT d.department_name, e.first_name, e.last_name
+FROM departments d
+JOIN employees e ON d.department_id = e.department_id
 WHERE d.department_name LIKE 'Sales';
+**/
 
 -- 2
 SELECT d.department_name, e.*
 FROM departments d, employees e
-WHERE d.department_id = e.department_id
-  AND d.department_name NOT IN ('IT','Purchasing');
+WHERE d.department_id = e.department_id AND
+      d.department_name NOT IN ('IT','Purchasing');
 
 -- 3
 SELECT l.city
 FROM departments d, locations l
-WHERE d.location_id = l.location_id
-    AND department_name LIKE '_u%';
+WHERE d.location_id = l.location_id AND
+      department_name LIKE '_u%';
 
 -- 4
 SELECT l.city, d.*
@@ -68,8 +78,3 @@ FROM employees e, employees m, jobs j
 WHERE e.manager_id = m.employee_id AND
       m.job_id = j.job_id AND
       e.job_id = m.job_id;
-
-/* OPCIÓ AMB JOIN
-
-
-*/
