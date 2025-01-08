@@ -244,4 +244,70 @@ WHERE d.department_id=e.department_id;  --CONDICIÓ: sobre la clau forana
   lenght(last_name)>6
 
 **REFLEXIVES**  
-/* 10.	Mostra el nom i els cognoms del cap de David Austin.*/
+```sql
+/*10. Mostra el cognom i el job_id dels empleats que tinguin el mateix ofici que el seu cap i
+mostra el nom del cap.*/
+SELECT e.last_name, e.job_id
+FROM employees e, employees m
+WHERE e.manager_id = m.employee_id AND
+      e.job_id = m.job_id;
+
+```
+
+
+
+### MANIPULAR DATES
+* TO_CHAR
+* BETWEEN
+* EXTRACT
+
+### Renombrar COLUMNES
+* AS
+```sql
+SELECT manager_id, count(*) AS n_empleats, MAX(salary)
+FROM employees
+GROUP BY m.manager_id
+HAVING count(*) > 6;
+```
+* 
+```sql
+SELECT manager_id "Manager ID", sum(salary) "Suma salaris"
+FROM employees
+GROUP BY manager_id
+HAVING sum(salary) > 50000;
+```
+
+
+## JOIN
+Tenim diferents maneres de fer el `JOIN`:   
+
+* ON  
+```sql
+SELECT *
+FROM employees e JOIN departments d
+ON (d.department_id = e.department_id)
+WHERE (e.first_name LIKE 'Joan');
+```
+Però puc treure el `WHERE` i posar-ho tot en el `ON`
+```sql
+SELECT *
+FROM employees e JOIN departments d
+ON (d.department_id = e.department_id) AND (e.first_name LIKE 'Joan');
+```
+
+* USING  
+```sql
+SELECT *
+FROM employees e JOIN departments d
+USING (department_id)
+WHERE (e.first_name LIKE 'Joan');
+```
+
+* NATURAL JOIN  
+No fa falta dir-li la condició.
+```sql
+SELECT *
+FROM employees e NATURAL JOIN departments d
+WHERE (e.first_name LIKE 'Joan');
+```
+
