@@ -309,5 +309,5 @@ No fa falta dir-li la condició.
 SELECT *
 FROM employees e NATURAL JOIN departments d
 WHERE (e.first_name LIKE 'Joan');
-```
+``` 
 

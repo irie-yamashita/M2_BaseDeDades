@@ -4,7 +4,7 @@
 
 /*1. Calcular el nombre empleats que realitzen cada ofici a cada departament.
 Les dades que es visualitzen són: codi del departament, ofici i nombre empleats.*/
-SELECT department_id, job_id, count(*)
+SELECT department_id, job_id, count(*) "Nº empleats"
 FROM employees
 GROUP BY department_id, job_id;
 
@@ -17,11 +17,11 @@ WHERE d.department_id = e.department_id
 GROUP BY d.department_id;
 
 /*3. Mostra el número d'empletas del departamant de 'SALES'.*/
-SELECT department_name, count(*)
+SELECT d.department_name, count(*)
 FROM employees e, departments d
-WHERE d.department_id = e.department_id AND
-    upper(d.department_name) LIKE 'SALES'
-GROUP BY d.department_name;
+WHERE e.department_id = d.department_id AND
+      upper(d.department_name) LIKE 'SALES'
+GROUP BY d.department_id;
 
 /*Alternativa amb HAVING:
 SELECT department_name, count(*)
@@ -43,11 +43,10 @@ GROUP BY l.city;
 
 
 /*5. Mostra per cada cap (manager_id), la suma dels salaris dels seus empleats, però només, per aquells casos en els quals la suma del salari dels seus empleats sigui més gran que 50000. */
-SELECT manager_id "Manager ID", sum(salary) "Suma salaris"
+SELECT manager_id, sum(salary) "Suma salaris"
 FROM employees
 GROUP BY manager_id
-HAVING sum(e.salary) > 50000;
-
+HAVING sum(salary) > 50000;
 -- NO fa falta que uneixis employees i manager. Si demanés el nom del cap.
 
 
