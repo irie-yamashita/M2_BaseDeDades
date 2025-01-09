@@ -279,6 +279,7 @@ HAVING sum(salary) > 50000;
 
 
 ## JOIN
+Serveix per unir taules, per defecte és `INNER JOIN`.
 Tenim diferents maneres de fer el `JOIN`:   
 
 * ON  
@@ -311,3 +312,16 @@ FROM employees e NATURAL JOIN departments d
 WHERE (e.first_name LIKE 'Joan');
 ``` 
 
+### OUTER JOIN
+El problema del JOIN normal (INNER), és que no agafarà aquelles dades que no compleixin la condició de **ON PK = FK**. Per exemple, no agafaria els employees que tenen el department null i descartaria aquells departaments els quals no apareixen a la taula employees. Per això fem un `º`
+
+
+**RESUM**  
+* [INNER] JOIN
+---
+* LEFT [OUTER] JOIN
+* RIGHT [OUTER] JOIN
+* FULL [OUTER] JOIN
+---
+* CROSS JOIN
+* NATURAL JOIN
