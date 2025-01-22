@@ -2,7 +2,7 @@
 
 ### Instal·lació POstgreSQL Portable
 
-[Instal·lació PostgreSQL POrtable Linux - Classroom](https://classroom.google.com/c/NzA1MTYyMjgyNDU1/m/NzI2NDA1NDEzOTI1/details)
+[Instal·lació PostgreSQL Portable Linux - Classroom](https://classroom.google.com/c/NzA1MTYyMjgyNDU1/m/NzI2NDA1NDEzOTI1/details)
 
 [Instal·lació PostgreSQL Portable WINDOWS - Classroom](https://classroom.google.com/c/NzA1MTYyMjgyNDU1/m/NzI2NjI1NjE5OTgx/details)
 

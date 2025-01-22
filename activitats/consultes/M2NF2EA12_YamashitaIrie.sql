@@ -32,8 +32,12 @@ AND d.location_id = '1400';
 /*3. Mostra el cognom i la data de contractació de qualsevol empleat contractat després de
 l’empleat Davies. Fes servir JOIN.*/
 SELECT e.first_name, e.last_name
-FROM employees e JOIN employees d ON (lower(d.last_name) LIKE 'davies')
+FROM employees e JOIN employees d
+ON (lower(d.last_name) LIKE 'davies')
 AND e.hire_date > d.hire_date;
+
+-- DISTINCT()
+-- = 'DAVIES'
 
 
 /*4. Mostra el nom i cognom dels empleats, el nom del departament on treballen i el nom de la

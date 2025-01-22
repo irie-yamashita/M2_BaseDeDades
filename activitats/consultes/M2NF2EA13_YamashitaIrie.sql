@@ -7,7 +7,8 @@ FROM repventas v LEFT JOIN repventas c ON v.director = c.num_empl;
 
 /*2. Mostra els noms de tots els venedors i si tenen una oficina assignada mostra la ciutat on es troba l'oficina,*/
 SELECT v.nombre "Venedors", o.ciudad "Ciutat Oficina"
-FROM repventas v LEFT JOIN oficinas o ON v.oficina_rep = o.oficina;
+FROM repventas v
+LEFT JOIN oficinas o ON v.oficina_rep = o.oficina;
 
 
 /*3. Mostra els noms de tots els venedors i si tenen assigant un cap mostra el nom del seu cap
