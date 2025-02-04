@@ -8,7 +8,7 @@ FROM departments d
 WHERE d.department_id IN (SELECT e.department_id
                             FROM employees e
                             GROUP BY e.department_id
-                            HAVING AVG(e.salary) >= (SELECT AVG(e2.salary) as "mitjanaTotal"
+                            HAVING AVG(e.salary) >= (SELECT AVG(e2.salary)
                                                         FROM employees e2));
 
 -- Versió 2:
@@ -17,7 +17,7 @@ FROM departments d
 WHERE d.department_id IN (SELECT e.department_id
                             FROM employees e
                             GROUP BY e.department_id
-                            HAVING AVG(e.salary) >= (SELECT AVG(e2.salary) as "mitjanaTotal"
+                            HAVING AVG(e.salary) >= (SELECT AVG(e2.salary)
                                                         FROM employees e2
                                                         WHERE e2.department_id = d.department_id));
 
@@ -45,14 +45,16 @@ FROM employees e2;
 quants són aquests diners.*/
 SELECT d.department_name
 FROM departments d
-WHERE d.department_id = (SELECT d.department_id
+WHERE d.department_id = (SELECT e.department_id 
                          FROM employees e
-                         WHERE d.department_id = e.department_id
                          GROUP BY e.department_id
                          HAVING sum(e.salary) = (SELECT MAX(sumes)
                                                  FROM (SELECT sum(e2.salary) as "sumes"
                                                        FROM employees e2
                                                        GROUP BY e2.department_id) as "a"));
+
+
+-- no fa falta WHERE d.department_id = e.department_id en la primera subconsulta
 
 /* PASSOS
 -- part 1
@@ -61,7 +63,7 @@ FROM departments d
 WHERE d.department_id = ... 
 
 -- part 2      
-SELECT d.department_id
+SELECT e.department_id -- Compte, que he posat d.department_id en comptes de e.department_id
 FROM employees e
 WHERE d.department_id = e.department_id -- !! important això
 GROUP BY e.department_id
@@ -82,9 +84,9 @@ GROUP BY e2.department_id;
 SELECT e.first_name, e.last_name
 FROM employees e
 WHERE e.department_id IS NOT NULL
-  AND e.hire_date IN (SELECT MIN(e3.hire_date)
-                      FROM employees e3
-                      GROUP BY e3.department_id) ;
+  AND e.hire_date IN (SELECT MIN(e2.hire_date)
+                      FROM employees e2
+                      GROUP BY e2.department_id);
 
 /*PASSOS
 -- part 1
@@ -101,14 +103,15 @@ GROUP BY department_id;
 
 
 /*4. Mostra totes les dades d'aquells departaments que tinguin empleats que hagin finalitzat el seu contracte entre el gener de l'any 1992 i el desembre de l'any 2001.*/
-SELECT *
+SELECT d.*
 FROM departments d
 WHERE d.department_id IN (SELECT e.department_id
                           FROM employees e
                           WHERE e.job_id IN (SELECT j.job_id
                                              FROM job_history j
-                                             WHERE j.end_date BETWEEN '01-01-1992' AND '01-12-2001'));
+                                             WHERE j.end_date BETWEEN '1992-01-01' AND '2001-12-31'));
 
+--data en format YYYY-MM-DD
 /*PASSOS
 
 -- part 1
@@ -124,6 +127,6 @@ WHERE e.job_id IN ('');
 -- part 3
 SELECT j.job_id
 FROM job_history j
-WHERE j.end_date BETWEEN '01-01-1992' AND '01-12-2001';
+WHERE j.end_date BETWEEN '1992-01-01' AND '2001-12-31';
 
 */
