@@ -88,6 +88,13 @@ WHERE e.department_id IS NOT NULL
                       FROM employees e2
                       GROUP BY e2.department_id);
 
+-- o també...
+SELECT e.first_name, e.last_name
+FROM employees e
+WHERE e.hire_date = (SELECT MIN(e2.hire_date)
+                      FROM employees e2
+                      WHERE e.department_id = e2.department_id);
+
 /*PASSOS
 -- part 1
 SELECT e.first_name, e.last_name, e.department_id -- department_id (provisional)
