@@ -325,3 +325,41 @@ El problema del JOIN normal (INNER), és que no agafarà aquelles dades que no c
 ---
 * CROSS JOIN
 * NATURAL JOIN
+
+
+
+### SUBCONSULTES AVANÇADES
+Mostra l'ID i el número d'empleats del departament que tingui més empleats (exemple 5)
+
+Passos:
+Necessito el ID del departament amb més empleats. Però no tinc un atribut que és Nº empleats, l'he de trobar amb un count(empleat_id) i GROPU BY.
+
+
+```sql
+SELECT e1.department_id, count(e1.employee_id)
+FROM employees e1
+GROUP BY e1.department_id
+HAVING  count(e1.department_id) = (SELECT MAX(maxims)
+                                   FROM (SELECT count(e2.employee_id) as "maxims"
+                                         FROM employees e2
+                                         GROUP BY e2.department_id) as "a");
+``` 
+
+1. Trobo QUANTS empleats té cada departament amb un GROUP by department_id:
+```sql
+SELECT count(e2.employee_id) as "maxims"
+FROM employees e2
+GROUP BY e2.department_id;
+```
+
+>Li poso nom al que em retornarà (SELECT) as "maxims"
+
+2. Ara faig la consulta per saber el MAX utilitzant el que em retorna la consulta anterior utilitzant l'àlies `maxims`:
+```sql
+(SELECT MAX(maxims)
+FROM (SELECT count(e2.employee_id) as "maxims"
+      FROM employees e2
+      GROUP BY e2.department_id) as "a");
+```
+
+>Li poso nom al que em retornarà (SELECT) as "a"
