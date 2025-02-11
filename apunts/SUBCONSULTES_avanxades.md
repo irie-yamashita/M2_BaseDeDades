@@ -1,7 +1,7 @@
 # SUBCONSULTES AVANÇADES
 
 
-Prenem com exemple el seguüent exercici:
+Prenem com exemple el següent exercici:
 
 ```sql
 /*3.	Mostra el cognom, el número de departament i el salari dels empleats que tenen el salari més alt del seu departament. Ordena els resultats 
