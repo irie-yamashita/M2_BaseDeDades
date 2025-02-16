@@ -14,8 +14,8 @@ Comprovació: `SELECT * FROM nomTaula;` o `SELECT nomColumna FROM nomTaula WHERE
 
 ### INSERT
 | **Nomenclatura:**
-|----------------------------------------------------|
-| `INSERT INTO` nomtaula  (camps/atributs Taula) `VALUES` (valors) |
+|--------------------------------------------------------------------------------------|
+| `INSERT INTO` nomtaula  (columna1(atribut), columna2...) `VALUES` (valor1,valor2...) |
 
 * Puc fer-ho posat els atributs i valors:
 ```sql
@@ -23,7 +23,7 @@ INSERT INTO empleat (ID,LAST_NAME, FIRST_NAME, USERID, SALARY) VALUES (1, 'Patel
 'Ralph', 'rpatel', 895);
 ```
 
-* Posant només TOTS els valors:
+* Posant només tots els VALORS:
 ```sql
 INSERT INTO empleat VALUES (1, 'Patel', 'Ralph', 'rpatel', '895');
 ```
