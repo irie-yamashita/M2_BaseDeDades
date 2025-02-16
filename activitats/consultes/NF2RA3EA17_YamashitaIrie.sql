@@ -8,8 +8,10 @@ SELECT nom_empresa, ciutat_empresa, activitat
 FROM empresaproductora
 WHERE nif_empresa IN (SELECT nif_empresa
                      FROM residu_constituent
-                     WHERE cod_constituent = 9912);
+                     WHERE cod_constituent = 9912)
+ORDER BY nom_empresa;
 
+-- Correcció: t'ha faltat el ORDER BY
 
 /*2. Mostra el nom de l’empresa i la quantitat de residus de l’empresa productora que genera
 més residus tóxics. (Utilitza la cláusula JOIN).*/
@@ -19,11 +21,11 @@ FROM empresaproductora e JOIN residu r USING(nif_empresa)
 ORDER BY r.quantitat_residu DESC
 LIMIT 1;
 
--- o... (???)
-SELECT e.nif_empresa, e.nom_empresa, r.quantitat_residu
-FROM empresaproductora e JOIN residu r USING(nif_empresa)
-ORDER BY (r.toxicitat*r.quantitat_residu) DESC
-LIMIT 1;
+-- Correcció:
+select e.nom_empresa, r.quantitat_residu
+from empresaproductora e JOIN residu r
+ON e.nif_empresa = r.nif_empresa
+WHERE r.quantitat_residu = (select max(quantitat_residu) from residu);
 
 
 /*3. Mostra per cada tipus de tractament, la quantitat màxima de residus traslladats i la quantitat
