@@ -21,6 +21,8 @@ Metacomandes comprovació: `\l \du \d \d+`
     - [Canviar tipus de dada](#canivar-tipus-de-dada)
     - [Afegir RESTRICCIÓ](#afegir-restricció)
     - [Esborro RESTRICCIÓ](#esborro-restricció)
+8. [COMPROVAR](#comprovar)
+9. [ELIMINAR](#eliminar)
 
 ---
 ### Crear TAULES  
@@ -34,6 +36,10 @@ CREATE TABLE REGION ();
 ```
 >[!NOTE]
 >Comprovació: `\dt`
+
+>![!TIP]  
+> Comença creant les taules que no tenen cap dependència
+
 
 #### Omplir taula amb els ATRIBUTS:
 ```sql
@@ -81,13 +87,13 @@ Nom varchar(30) DEFAULT 'Irie'
 
 ---
 ### CONSTRIANS / RESTRICCIONS
-* PRIMARY KEY  
+* **PRIMARY KEY**  
 Nomenclatura: PK_NomTaula
 ```sql
 CONSTRAINT PK_TAULA PRIMARY KEY (nomAtribut),
 ```
  
-* FOREING KEY
+* **FOREING KEY**  
 Nomenclatura: FK_TaulaActual_TaulaForeing_nomAtribut  
 
 ```sql
@@ -99,9 +105,9 @@ CONSTRAINT FK_ALUMNE_PERSONA_nom FOREIGN KEY (nomAtribut) REFERENCES TAULAFOREIN
 
 ---
 ### CHECK
-Nomenclatura: CK_nomAtribut_descripció
+Nomenclatura: CK_nomAtribut
 ```sql
-CONSTRAINT CK_preuV_sup CHECK (preuVenda >0),
+CONSTRAINT CK_preu CHECK (preuVenda >0),
 ```
 Tipus:  
 * Més gran, més petit: `CHECK (atribut >0)`
@@ -114,11 +120,13 @@ Tipus:
 
 * Primera lletra MAJUS:`CHECK (nomAtribut = INITCAP(nomAtribut)),`
 
++ Not null: `CHECK (nomAtribut IS NOT NULL)`
+
 * ...
 
 ---
 
-#### COMENTARIS
+### COMENTARIS
 * Comentari a la **taula**:
 ```sql
 COMMENT ON COLUMN TAULA IS 'comentari que vull posar';
@@ -136,6 +144,7 @@ COMMENT ON COLUMN TAULA.COLUMNA IS 'comentari que vull posar';
 
 
 ### ALTER
+Per afegir/modificar algun atribut o restricció després d'haver creat la taula:  
 
 * #### Canivar nom taula
 ```sql
@@ -146,6 +155,12 @@ ALTER TABLE nomTaula RENAME TO nomNou;
 ```sql
 --elimino taula
 DROP TABLE nomTaula;
+```
+>[!WARNING]  
+> Si no et deixa esborrar la taula perquè hi ha dependències (FK), afegeix `CASCADE`:  
+```sql
+--elimino taula
+DROP TABLE nomTaula CASCADE;
 ```
 
 ---
@@ -179,6 +194,7 @@ DROP COLUMN nomColumna;
 ALTER TABLE FITXA
 ALTER COLUMN CODI_POSTAL TYPE VARCHAR(10);
 ```
+> Si no et surt bé prova: `SET DATA TYPE VARCHAR(10)`
 
 * #### Canivar tipus de dada
 ```sql
@@ -195,7 +211,7 @@ ADD CONSTRAINT CK_UPPER_PROV CHECK (PROVINCIA = UPPER(PROVINCIA));
 
 * #### Canviar nom CONSTRAIN/RESTRICCIÓ
 ```sql
--- canvio nom d'una constrain
+-- canvio nom d'una constraint
 ALTER TABLE FITXA
     RENAME CONSTRAINT PK_FITXA TO PrimKey_Fitxa;
 ```
@@ -227,4 +243,39 @@ ALTER COLUMN nomColumna DROP DEFAULT;
 ```
 ---
 
+### COMPROVAR
+* Base de dades: `\l`
+* Usuari: `\du`
+* Taules: `\d`
+* Comentaris: `\d+`
+* Atributs i restriccions: `\d nomTaula`
 
+### ELIMINAR
+* #### Eliminar DATABASE
+```sql
+DROP DATABASE nomBaseDades;
+```
+* #### Eliminar TAULA
+```sql
+--elimino taula
+DROP TABLE nomTaula;
+```
+>[!WARNING]  
+> Si no et deixa esborrar la taula perquè hi ha dependències (FK), afegeix `CASCADE`:  
+```sql
+--elimino taula
+DROP TABLE nomTaula CASCADE;
+```
+
+* #### Eliminar COLUMNA
+```sql
+ALTER TABLE nomTaula
+DROP COLUMN nomColumna;
+```
+
+* #### Eliminar RESTRICCIÓ
+```sql
+-- eliminar restricció
+ALTER TABLE FITXA
+DROP CONSTRAINT CK_UPPER_PROV;
+```
