@@ -7,7 +7,7 @@ Metacomandes comprovació: `\l \du \d \d+`
 1. [CREATE](#crear-taules)
 2. [Omplir taula amb els ATRIBUTS](#omplir-taula-amb-els-atributs)
 3. [Restriccions (DEFAULT, NOT NULL)](#restriccions-inici)
-4. [CONSTRAINS PK i FK](#constrians--restriccions)
+4. [CONSTRAINTS PK i FK](#constraints--restriccions)
 5. [Restriccions: CHECK](#check)
 6. [COMENTARIS](#comentaris)
 7. [ALTER](#alter)
@@ -16,7 +16,7 @@ Metacomandes comprovació: `\l \du \d \d+`
     - [Afegir COLUMNA](#afegir-columna)
     - [Canviar nom COLUMNA](#canviar-nom-columna)
     - [Eliminar COLUMNA]()
-    - [Canviar nom CONSTRAIN](#canviar-nom-constrainrestricció)
+    - [Canviar nom CONSTRAINT](#canviar-nom-constraintrestricció)
     - [Modificar "especificació" tipus](#modificar-tamany-tipus)
     - [Canviar tipus de dada](#canivar-tipus-de-dada)
     - [Afegir RESTRICCIÓ](#afegir-restricció)
@@ -86,7 +86,7 @@ Nom varchar(30) DEFAULT 'Irie'
 
 
 ---
-### CONSTRIANS / RESTRICCIONS
+### CONSTRAINTS / RESTRICCIONS
 * **PRIMARY KEY**  
 Nomenclatura: PK_NomTaula
 ```sql
@@ -121,6 +121,9 @@ Tipus:
 * Primera lletra MAJUS:`CHECK (nomAtribut = INITCAP(nomAtribut)),`
 
 + Not null: `CHECK (nomAtribut IS NOT NULL)`
+
++ UNIQUE: `CONSTRAINT unique_name UNIQUE (nomAtribut)` !!!No CHECK! 
+
 
 * ...
 
@@ -209,7 +212,7 @@ ALTER TABLE FITXA
 ADD CONSTRAINT CK_UPPER_PROV CHECK (PROVINCIA = UPPER(PROVINCIA));
 ```
 
-* #### Canviar nom CONSTRAIN/RESTRICCIÓ
+* #### Canviar nom CONSTRAINT/RESTRICCIÓ
 ```sql
 -- canvio nom d'una constraint
 ALTER TABLE FITXA

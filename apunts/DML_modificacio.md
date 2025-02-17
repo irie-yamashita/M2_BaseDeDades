@@ -30,6 +30,7 @@ INSERT INTO empleat VALUES (1, 'Patel', 'Ralph', 'rpatel', '895');
 
 >[!NOTE]  
 > Sino vull posar-li un valor puc posar: `NULL` o `DEFAULT`
+> Si ometo l'atribut a dalt se'm posarà el per defecte, i si no en té, NULL.
 
 >[!WARNING]
 > `NULL` i `DEFAULT` NO són el mateix. 
@@ -46,12 +47,14 @@ SELECT *;
 ```
 * Tots els valors TAULA
 ```sql
-SELECT * FROM nomTaula;
+SELECT *
+FROM nomTaula;
 ```
 
 * Tots els valors d'una COLUMNA
 ```sql
-SELECT nomColumna FROM nomTaula;
+SELECT nomColumna
+FROM nomTaula;
 ```
 >[!NOTE]  
 >També pots mirar dos columnes a l'hora posant `SELECT nomColumna1,nomColumna2 FROM nomTaula;`
@@ -59,12 +62,16 @@ SELECT nomColumna FROM nomTaula;
 
 * VALOR concret filtrada (amb WHERE)
 ```sql
-SELECT nomColumna FROM nomTaula WHERE atribut='valor';
+SELECT nomColumna
+FROM nomTaula
+WHERE atribut='valor';
 ```
 
 ### UPDATE
 ```sql
-UPDATE nomTaula SET nomColumna = valor WHERE condició;
+UPDATE nomTaula
+SET nomColumna = valor
+WHERE condició;
 ```
 Comprovació: `SELECT nomColumna FROM nomTaula`
 

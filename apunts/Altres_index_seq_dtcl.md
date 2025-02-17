@@ -41,6 +41,7 @@ Però no es veu visualment, la millora és interna.
 Hi ha **2** tipus d'ÍNDEXS:
 * Index normal
 * Index **UNIQUE**
+* Múltiple
 
 **CREATE Índexs:**  
 Normal:
@@ -50,6 +51,7 @@ ON PERSONA(COGNOM1);
 ```
 
 Unique:  
+Mostren els valors sense repetir: (**DISTINCT**)
 ```sql
 -- Creem un nou índex per el campo TELEFON de la taula PERSONA
 CREATE UNIQUE INDEX Telefon_index
@@ -58,6 +60,13 @@ ON PERSONA(TELEFON);
 
 >[!TIP]  
 > Comprovació: `\d nomTAULA`
+
+Múltiple:  
+```sql
+CREATE INDEX idx_nom_cognom
+ON PERSONA(NOM, COGNOM1);
+```
+
 
 ### VISTES
 Les vistes en serverixen per:
