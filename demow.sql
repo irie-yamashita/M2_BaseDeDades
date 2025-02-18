@@ -102,3 +102,116 @@ SET equip = 11
 WHERE dni = '38624852';
 
 INSERT INTO Fitxa (dni, nom, cognoms, adreça, telefon, equip, provincia, data_naix) VALUES ();
+
+
+/*EXAMEN*/
+
+-- 3
+ALTER TABLE Lloguer
+RENAME CONSTRAINT ck_retorn TO ck_ret;
+
+-- 4
+ALTER TABLE Lloguer
+DROP COLUMN preu;
+
+-- 5
+ALTER TABLE Lloguer
+ADD COLUMN preu DOUBLE PRECISION NOT NULL;
+
+    -- o
+ALTER TABLE Lloguer
+ADD COLUMN preu DOUBLE PRECISION;
+
+ALTER TABLE Lloguer
+ALTER COLUMN preu SET NOT NULL;
+
+-- 6
+ALTER TABLE Lloguer
+ADD CONSTRAINT ck_preu CHECK (preu > 0);
+
+
+-- 7
+ALTER TABLE Lloguer
+ADD CONSTRAINT ck_data CHECK (dataretorn > datalloguer);
+
+
+-- 8
+ALTER TABLE Lloguer
+ALTER COLUMN client TYPE NUMERIC(35);
+
+-- Dona error perquè la columna client és una clau forana que fa referència a un altre camp que és de tipus INTEGER. Llavors client ha de ser del mateix tipus.
+
+-- 9
+INSERT INTO CLIENT (nom, cognom1, cognom2, dni, telefon, email)
+VALUES ('Maria', 'Lopez', 'Ruiz', '21578946Z', 888777444, 'mlop@gmail.com');
+
+INSERT INTO CLIENT (nom, cognom1, cognom2, dni, telefon, email)
+VALUES ('Jose', 'Mendez', 'Coll', '14785634C', 123456789, 'jMendez@gmail.com');
+
+INSERT INTO CLIENT (nom, cognom1, cognom2, dni, telefon, email)
+VALUES ('Emma', 'Stone', 'Williams', '78785454N', 454656124, 'eStone@gmail.com');
+
+INSERT INTO CLIENT (nom, cognom1, cognom2, dni, telefon, email)
+VALUES ('Roberto', 'Gil', 'Coma', '12455687X', 747652145, 'rGil@gmail.com');
+
+INSERT INTO CLIENT (nom, cognom1, cognom2, dni, telefon, email)
+VALUES ('Pepe', 'Martin', 'Hernandez', '15746987L', 654875326, 'pMartin@gmail.com');
+
+
+-- 10
+
+
+-- 11
+CREATE SEQUENCE idlloguer_seq
+INCREMENT 10
+START WITH 100
+MAXVALUE 99999999;
+
+
+-- 13
+UPDATE Lloguer
+SET retorn = 'PEN'
+WHERE preu > 150;
+
+-- 14
+DELETE FROM bicicleta
+WHERE idbici = 2126219;
+
+-- 15
+DROP TABLE client;
+
+-- 16
+TRUNCATE TABLE bicicleta;
+
+-- 17
+CREATE VIEW telfclient
+AS (SELECT nom, cognom1, telefon
+FROM Client);
+
+-- 18
+CREATE UNIQUE INDEX cognom_idx
+ON Client(cognom1);
+
+-- 19
+UPDATE bicicleta
+SET idbici = 2233456
+WHERE idbici = 4233456;
+
+ALTER TABLE lloguer
+DROP CONSTRAINT fk_llog_bic;
+
+ALTER TABLE lloguer
+ADD CONSTRAINT fk_llog_bic  FOREIGN KEY (bici) REFERENCES BICICLETA(idbici) ON UPDATE CASCADE;
+
+-- 20
+TRUNCATE TABLE Bicicleta CASCADE;
+
+BEGIN;
+INSERT INTO bicicleta VALUES ('45567', 'BH', 'Simple', '600');
+
+-- 1 ROW
+
+DELETE FROM bicicleta WHERE idbici='45567';
+ROLLBACK;
+
+INSERT INTO bicicleta VALUES ('533422', 'BH', 'Ramses', 970);

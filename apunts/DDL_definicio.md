@@ -132,12 +132,12 @@ Tipus:
 ### COMENTARIS
 * Comentari a la **taula**:
 ```sql
-COMMENT ON COLUMN TAULA IS 'comentari que vull posar';
+COMMENT ON TABLE nomTaula IS 'comentari que vull posar';
 ```
 
 * Comentari a **columna** (atribut):
 ```sql
-COMMENT ON COLUMN TAULA.COLUMNA IS 'comentari que vull posar';
+COMMENT ON COLUMN nomTaula.atribut IS 'comentari que vull posar';
 ```
 
 >[!TIP]  
@@ -228,7 +228,7 @@ DROP CONSTRAINT CK_UPPER_PROV;
 
 ---
 
-* #### Afegir DEFAULT o NOT NULL  
+* #### Afegir DEFAULT o NOT NULL  o UNIQUE
 DEFAULT
 ```sql
 ALTER TABLE nomTaula
@@ -239,6 +239,12 @@ NOT NULL
 ALTER TABLE nomTaula
 ALTER COLUMN nomColumna SET NOT NULL;
 ```
+UNIQUE
+```sql
+ALTER TABLE nomTaula
+ADD CONSTRAINT nomColumna UNIQUE (telefono);
+```
+
 * Esborrar DEFAULT o NOT NULL
 ```sql
 ALTER TABLE nomTaula
