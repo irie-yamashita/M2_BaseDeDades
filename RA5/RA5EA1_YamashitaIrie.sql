@@ -1,5 +1,6 @@
 
--- 1
+/*Exercici 1. Crea un bloc anònim amb tres variables de tipus NUMERIC. Aquestes variables han de tenir un valor inicial de 15, 40 i 35 respectivament.
+El bloc ha de sumar aquestes tres variables i mostrar per pantalla ‘LA SUMA TOTAL ÉS: (la suma de les variables)’.*/
 do $$
     declare
         numA numeric := 15;
@@ -13,7 +14,7 @@ do $$
 $$
 
 
--- 2
+/*Exercici 2. Crea un bloc anònim que ha d'imprimir el cognom de l'empleat en majúscules amb codi número 104 de la taula (EMPLOYEES), on has de declarar una variable de tipus last_name.*/
 do $$
     DECLARE
         cognom EMPLOYEES.last_name%TYPE;
@@ -28,7 +29,7 @@ do $$
 $$
 
 
--- 3
+/*Exercici 3. Crea un bloc anònim que ha d'imprimir el cognom en majúscules de l'empleat amb l’id introduït per pantalla.*/
 do $$
     DECLARE
     cognom EMPLOYEES.last_name%TYPE;
@@ -65,7 +66,7 @@ $$
 -- Correcció: ell a les variables li posa 'v_' davant
 
 
---5
+/*Exercici 5. Crea un bloc anònim amb una variable PL/SQL que imprimeixi el salari més alt dels treballadors que treballen al departament 'SALES'.*/
 do $$
     DECLARE
         salari EMPLOYEES.salary%TYPE;
