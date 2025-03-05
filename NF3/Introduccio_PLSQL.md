@@ -3,7 +3,7 @@
 ## Estructura bàsica
 Elements bàsics: `DO, DECLARE, BEGIN, END`
 
-```plpgsql
+```sql
 DO $$
 DECLARE
     
@@ -14,40 +14,70 @@ $$ language plpgsql;
 
 ```
 
+Amb consulta:  
+```sql
+DO $$
+DECLARE
+    
+BEGIN
+    SELECT 
+    INTO
+    FROM
+    WHERE
 
-## VARIABLES
+END;
+$$ language plpgsql;
 
-* **DECLARACIÓ** 
+```
+
+
+## Variables
+
+### DECLARACIÓ 
 La declaració la fem entre el `DECLARE` i el `BEGIN`:
-```plpgsql
+```sql
 DECLARE
     nom_variable tipus_variable;
     nom_variable tipus_variable := 'valor_inicial'; //la puc inicialitzar
 ```
 
 Exemple:  
-```plpgsql
+```sql
 DECLARE
     V_oficio VARCHAR(9);
     V_total NUMERIC(9,2) := 0;
-    V_fecha DATE := CURRENT_DATE + 9; 
-    V_valido BOOLEAN NOT NULL := TRUE; //que no accepti nulls
-    v_comision CONSTANT NUMERIC(3) := 100; //pot ser constant
+    V_valido BOOLEAN NOT NULL := TRUE; --que no accepti nulls
+    v_comision CONSTANT NUMERIC(3) := 100; -- pot ser constant
 ```
+> Per l'assignació put utilitzar `:=` o `=`.
 
 >[IMPORTANT] També puc donar-li el tipus d'una columna/atribut en concret:  
 
-```plpgsql
-    nom taula.columna%TYPE
-```
 
 Exemple: 
-```plpgsql
-    nom_empleat EMPLOYEES.first_name%TYPE
+```sql
+    var_nom EMPLOYEES.first_name%TYPE
 ```
 
+### ASSIGNACIÓ AMB CONSULTA
+Per poder assignar un valor d'una consulta a una variable he d'utilitzar el `INTO`:
+```sql
+BEGIN
+    SELECT first_name
+    INTO var_nom -- <---
+    FROM employees
+    WHERE employee_id = 100;
+END
+```
 
-### VARIABLES ESCALARS
+## RAISE NOTICE
+Serveic per imprimir, com un `println` o un `console.log`, però no podem posar les variables directament, posem un `%`:
+
+```plpgsql
+RAISE NOTICE 'Hola %', var_nom; // Hola Joan
+```
+
+> Va a la part del `BEGIN`  
 
 
 
@@ -59,12 +89,6 @@ Tenim 2 tipus de variables:
 - Varaibles **NO PL/SQL** (explicades més endavant)
 
 
-
-## RAISE NOTICE
-Serveic per imprimir, com un `println` o un `console.log`, però no podem posar les variables directament, posem un `%`:
-
-```plpgsql
-RAISE NOTICE 'Hola %', var_nom; // Hola Joan
-```
-
-> Va a la part del `BEGIN`  
+# TO DO
++ Tipus complexe: ROWTYPE, RECORD, TYPE
++ Funcions i procediments
