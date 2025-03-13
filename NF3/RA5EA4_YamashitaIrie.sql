@@ -1,4 +1,7 @@
-/*01*/
+/*Exercici 1. Realitzar un programa que contingui una funció que dupliqui la quantitat rebuda com a paràmetre.
+La funció rebrà el nom de FUNC_DUPLICAR_QUANTITAT.
+S’ha de programar un bloc principal que demani per teclat la quantitat i que cridi a la funció FUNC_DUPLICAR_QUANTITAT
+passant el paràmetre corresponent.*/
 CREATE OR REPLACE FUNCTION FUNC_DUPLICAR_QUANTITAT (quantitat NUMERIC)
     RETURNS NUMERIC language plpgsql AS
 $$
@@ -22,7 +25,8 @@ $$ language plpgsql;
 
 
 
-/*02*/
+/*Exercici 2. Realitzar un programa que contingui una funció que calculi el factorial d’un número que es passa com a paràmetre.
+La funció rebrà el nom de FUNC_FACTORIAL. S’ha de programar un bloc principal que pregunti a l’usuari pel número a calcular i cridi a la funció FUNC_FACTORIAL, passant el paràmetre corresponent.*/
 CREATE OR REPLACE FUNCTION FUNC_FACTORIAL (valor NUMERIC)
     RETURNS NUMERIC language plpgsql AS
 $$
@@ -51,7 +55,11 @@ DO $$
 $$ language plpgsql;
 
 
-/*3*/
+/*Exercici 3. Realitzar un programa que contingui un procediment anomenat PROC_ALTA_JOB que doni d’alta un nou ofici (JOB) a la taula jobs.
+Totes les dades del nou ofici s’han de passat com com a paràmetre.
+S’ha de programar un bloc principal que pregunti a l’usuari totes les dades del nou ofici i cridi el procediment PROC_ALTA_JOB.
+Abans d’inserir s’ha de comprovar que el valor màxim i mínim del salari no sigui negatiu i a més, que el salari mínim sigui més petit que el salari màxim.
+Mostra els missatges d’error corresponents.*/
 
 CREATE OR REPLACE PROCEDURE PROC_ALTA_JOB (id jobs.job_id%type, title jobs.job_title%type, max jobs.max_salary%type, min jobs.min_salary%type) language plpgsql AS
     $$
