@@ -88,6 +88,22 @@ $$
     END;
 $$ language plpgsql;
 
+-- Correcció:
+DO $$
+DECLARE
+var_edat INTEGER :=:vedat;
+BEGIN
+    IF var_edat BETWEEN 0 AND 17 THEN
+    RAISE NOTICE 'Ets menor d"edat!';
+    ELSIF var_edat BETWEEN 18 AND 40 THEN
+    RAISE NOTICE 'Ja ets major d`edat!';
+    ELSIF var_edat > 40 THEN
+    RAISE NOTICE 'ja ets força gran!';
+    ELSIF var_edat <0 THEN
+    RAISE NOTICE 'Error ! L´edat no pot ser negativa';
+    END IF;
+END;
+$$ LANGUAGE PLPGSQL;
 
 /*4)Exercici 4. Escriu un programa PL/SQL que demani quina operació es farà:
 opció 1 SUMAR, opció 2 RESTAR, opció 3 MULTIPLICAR, opció 4 DIVIDIR .
@@ -117,6 +133,8 @@ $$
         END IF;
     END;
 $$ language plpgsql;
+
+-- Correcció: A la divisió afegir-li un if per l'error
 
 
 /*5)Exercici 5. Escriu un programa PL/SQL que ens mostri els números entre un rang. El rang mínim és 1 i el màxim se li ha de preguntar a l’usuari i no pot ser menor que 2. Si no és 2 o més gran es mostra un missatge a l'usuari i finalitza el programa. Resol l’exercici utilitzant l’estructura FOR i després l’estructura WHILE.*/
