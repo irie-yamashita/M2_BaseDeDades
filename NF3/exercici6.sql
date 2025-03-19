@@ -49,6 +49,36 @@ CREATE OR REPLACE FUNCTION func_nom_manager (par_deparment_id employees.departme
     DECLARE
         var_manager_name employees.first_name%TYPE;
     BEGIN
+        SELECT first_name
+        INTO var_manager_name
+        FROM employees
+        WHERE employee_id = (SELECT manager_id
+                             FROM departments
+                             WHERE departments.department_id = par_deparment_id);
 
+        RETURN var_manager_name;
     END;
 $$ language plpgsql;
+
+DO
+$$
+    DECLARE
+    var_dept_id departments.department_id%TYPE = :v_dept_id;
+    var_nom_manager employees.first_name%TYPE;
+    BEGIN
+        SELECT func_nom_manager(var_dept_id)
+        INTO var_nom_manager;
+
+        RAISE NOTICE 'El nom del manager dept. % és: %', var_dept_id, var_nom_manager;
+    END;
+$$ language plpgsql;
+
+/* Comprovacions:
+SELECT first_name
+FROM employees
+WHERE employee_id = (SELECT manager_id
+                     FROM departments
+                     WHERE departments.department_id = 10);
+
+*/
+
