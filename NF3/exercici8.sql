@@ -1,7 +1,7 @@
 /*EA08*/
 
 /*01*/
-CREATE OR REPLACE PROCEDURE proc_info_pacient (par_dni PACIENT.DNI_PACIENT%TYPE) AS
+CREATE OR REPLACE PROCEDURE proc_info_pacient (par_dni PACIENT.DNI_PACIENT%TYPE) AS --CORREGIR!!!!!!!!!!
 $$
     DECLARE
         var_genere PACIENT.GENERE%TYPE;
@@ -30,6 +30,8 @@ $$ LANGUAGE plpgsql;
     FROM persona pe JOIN pacient pa ON pe.dni = pa.dni_pacient
     WHERE pe.dni = '48004645';
 */
+
+-- Correcció: És més fàcil fer 2 consultes.
 
 
 /*02*/

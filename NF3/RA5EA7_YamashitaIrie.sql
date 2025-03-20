@@ -2,7 +2,11 @@
 
 /*EA07*/
 
-/*01*/
+/*01
+Crea una funció anomenada func_num_tests que retorni el número total de tests realitzats. Crida la
+funció des d’un bloc anònim que mostri el missatge: 'El número de tests realitzats
+són:' <num_tests>.
+*/
 
 CREATE OR REPLACE FUNCTION func_num_test () RETURNS NUMERIC AS
 $$
@@ -28,7 +32,16 @@ DO $$
 $$ LANGUAGE plpgsql;
 
 
-/*02*/
+/*02
+Crea una funció anomenada func_despesa_tests que retorni el total de la despesa en reactius que s’ha
+produït amb els testos que la data del resultat sigui de l’any que passem com a paràmetre .
+Programa un bloc anònim per demanar a l’usuari l’any, cridi la funció per obtenir el resultat i mostri
+
+el missatge: 'La despesa en reactius utilitzats any <any> ha sigut:' <to-
+tal_despesa>.
+
+Prova el funcionament escrivint per patalla 2015.
+*/
 CREATE OR REPLACE FUNCTION func_despesa_tests (par_any NUMERIC) RETURNS NUMERIC AS
 $$
     DECLARE
