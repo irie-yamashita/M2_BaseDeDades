@@ -33,7 +33,6 @@ BEGIN
         RAISE NOTICE 'ID: % - Nom: % - Salari: %€ - Comissió: % - Data alta: %', emp.employee_id, emp.first_name,
         emp.salary, emp.commission_pct, emp.hire_date;
     END LOOP;
-    CLOSE emp_cur;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -98,7 +97,6 @@ BEGIN
             RAISE NOTICE 'Codi: % - Nom: % - Salari: %€', emp.employee_id, emp.first_name,
             emp.salary;
         END IF;
-
     END LOOP;
 END;
 $$ LANGUAGE plpgsql;
