@@ -1,5 +1,11 @@
 /*EA10. Excepcions (2)*/
 
+/*CORRECCIÓ:
+- En l'última excepció que és OTHERS, imprimeix l'error amb SQLERRM i SQLSTATE:
+    WHEN OTHERS THEN
+        RAISE EXCEPTION '%,%', SQLERRM, SQLSTATE;
+*/
+
 
 /*01 Exercici 1. Realitzar un programa que ens comprovi si un departament existeix o no a la taula corresponent
 consultant pel codi del departament. En cas d’existir el departament s’ha d’imprimir per pantalla i s’ha de comprovar
@@ -19,19 +25,19 @@ DO $$
         WHERE department_id = var_deptId;
 
         RAISE NOTICE '%', var_deptNom;
-        IF var_deptNom ILIKE 'A%' THEN
+        IF var_deptNom ILIKE 'A%' THEN          /*UPPER(SUBSTR(var_deptNom,1,1))*/
             RAISE NOTICE 'COMENÇA PER LA LLETRA A';
         ELSE
             RAISE NOTICE 'NO COMENÇA PER LA LLETRA A';
         END IF;
 
-        EXCEPTION
+    EXCEPTION
         WHEN NO_DATA_FOUND THEN
                 RAISE EXCEPTION 'ERROR: no dades';
         WHEN TOO_MANY_ROWS THEN
                 RAISE EXCEPTION 'ERROR: retorna més files';
         WHEN OTHERS THEN
-               RAISE EXCEPTION 'ERROR (sense definir)';
+               RAISE EXCEPTION 'ERROR (sense definir)'; /*RAISE EXCEPTION '%,%', SQLERRM, SQLSTATE;*/
 
     END;
 $$ LANGUAGE plpgsql;
@@ -80,13 +86,13 @@ DO $$
             RAISE NOTICE 'El ID de la localització no existeix!';
         END IF;
 
-        EXCEPTION
+    EXCEPTION
         WHEN NO_DATA_FOUND THEN
-        RAISE EXCEPTION 'ERROR: no dades';
+            RAISE EXCEPTION 'ERROR: no dades';
         WHEN TOO_MANY_ROWS THEN
-        RAISE EXCEPTION 'ERROR: retorna més files';
+            RAISE EXCEPTION 'ERROR: retorna més files';
         WHEN OTHERS THEN
-        RAISE EXCEPTION 'ERROR (sense definir)';
+            RAISE EXCEPTION 'ERROR (sense definir)';
     END;
 $$ LANGUAGE plpgsql;
 
@@ -102,9 +108,9 @@ CREATE OR REPLACE FUNCTION func_comprovar_loc (par_locID  LOCATIONS.LOCATION_ID%
         INTO STRICT var_locID
         FROM locations
         WHERE location_id = par_locID;
-        RETURN true;
+        RETURN TRUE;
 
-        EXCEPTION
+    EXCEPTION
         WHEN NO_DATA_FOUND THEN
             RETURN FALSE;
         WHEN OTHERS THEN
