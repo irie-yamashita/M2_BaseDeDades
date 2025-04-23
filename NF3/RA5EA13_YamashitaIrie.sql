@@ -1,4 +1,4 @@
-/*EA13. Cursors (3)*/
+/*EA13. Cursors (3) - Irie Yamashita*/
 
 /*01*/
 DO $$
@@ -123,19 +123,79 @@ SELECT func_emps_dep2(80);
 
 
 /*04*/
-SELECT *
-INTO EMP_NOU_SALARY
-FROM employees;
+CREATE TABLE EMP_NOU_SALARY AS
+SELECT * FROM EMPLOYEES;
 
 DO $$
     DECLARE
         curs_emps CURSOR FOR
         SELECT * FROM EMP_NOU_SALARY;
 
+        var_nouSalari EMPLOYEES.SALARY%TYPE;
+
     BEGIN
         FOR empl IN curs_emps LOOP
-            
+            var_nouSalari = empl.salary * 1.18;
+            UPDATE EMP_NOU_SALARY
+            SET salary = var_nouSalari
+            WHERE CURRENT OF curs_emps;
+
+            RAISE NOTICE 'El salari antic de l`empleat % era % i el nou salari serà: %', empl.last_name, empl.salary, var_nouSalari;
         END LOOP;
-	    --RETURN; -- OPCIONAL
+    END;
+$$ LANGUAGE plpgsql;
+
+/*!!!*/
+
+
+/*05*/
+DO $$
+    DECLARE
+        curs_empl CURSOR (par_deptId INTEGER) FOR
+        SELECT department_id, commission_pct
+        FROM EMP_NOU_SALARY
+        WHERE department_id = par_deptId;
+
+        reg_empl RECORD;
+        var_deptId DEPARTMENTS.DEPARTMENT_ID%TYPE = :v_deptId;
+
+    BEGIN
+        OPEN curs_empl(var_deptId);
+        LOOP
+            FETCH curs_empl INTO reg_empl;
+            EXIT WHEN NOT FOUND;
+            IF reg_empl.commission_pct IS NULL THEN
+                UPDATE EMP_NOU_SALARY
+                SET commission_pct = 0
+                WHERE CURRENT OF curs_empl;
+            ELSE
+                UPDATE EMP_NOU_SALARY
+                SET commission_pct = commission_pct + 0.2
+                WHERE CURRENT OF curs_empl;
+            END IF;
+        END LOOP;
+
+        RAISE NOTICE 'El departament % ja no té més empleats.', var_deptId;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE EXCEPTION 'ERROR (sense definir): %, %', SQLSTATE, SQLERRM;
+    END;
+$$ LANGUAGE plpgsql;
+
+
+/*06*/
+CREATE TABLE EMP_WITH_COMISS AS
+SELECT * FROM EMPLOYEES;
+
+DO $$
+    DECLARE
+        curs_emps CURSOR FOR
+        SELECT * FROM EMP_WITH_COMISS;
+    BEGIN
+        FOR empl IN curs_emps LOOP
+            DELETE FROM EMP_WITH_COMISS
+            WHERE commission_pct IS NULL;
+        END LOOP;
     END;
 $$ LANGUAGE plpgsql;
