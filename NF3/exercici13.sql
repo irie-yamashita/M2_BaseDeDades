@@ -1,3 +1,4 @@
+/*EA13. Cursors (3)*/
 
 /*01*/
 DO $$
@@ -68,6 +69,27 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION func_emps_dep (par_emplID EMPLOYEES.EMPLOYEE_ID%TYPE) RETURNS SETOF employees AS
     $$
     DECLARE
+        empl EMPLOYEES;
+
+        curs_emp CURSOR FOR
+        SELECT * FROM employees
+        WHERE department_id= par_emplID;
+
+    BEGIN
+        FOR empl IN curs_emp LOOP
+            RETURN  NEXT empl;
+        END LOOP;
+	    --RETURN; -- OPCIONAL
+    END;
+$$ LANGUAGE plpgsql;
+
+SELECT  func_emps_dep(10);
+
+/* Alternativa: no declaro cursor
+
+CREATE OR REPLACE FUNCTION func_emps_dep (par_emplID EMPLOYEES.EMPLOYEE_ID%TYPE) RETURNS SETOF employees AS
+    $$
+    DECLARE
         empl EMPLOYEES; /*EMPLOYEES%ROWTYPE*/
 
     BEGIN
@@ -78,7 +100,11 @@ CREATE OR REPLACE FUNCTION func_emps_dep (par_emplID EMPLOYEES.EMPLOYEE_ID%TYPE)
     END;
 $$ LANGUAGE plpgsql;
 
+*/
+
 SELECT  func_emps_dep(10);
+
+
 
 
 -- b) SETOF i RETURN QUERY
@@ -97,3 +123,19 @@ SELECT func_emps_dep2(80);
 
 
 /*04*/
+SELECT *
+INTO EMP_NOU_SALARY
+FROM employees;
+
+DO $$
+    DECLARE
+        curs_emps CURSOR FOR
+        SELECT * FROM EMP_NOU_SALARY;
+
+    BEGIN
+        FOR empl IN curs_emps LOOP
+            
+        END LOOP;
+	    --RETURN; -- OPCIONAL
+    END;
+$$ LANGUAGE plpgsql;
