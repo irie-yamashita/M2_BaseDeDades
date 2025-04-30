@@ -1,14 +1,19 @@
 /*EA15. Triggers (1) - Irie Yamashita*/
 
+/*CORRECCIONS
+    - Noms de les funcions que criden els triggers: el mateix nom que el trigger, però 'func' en comptes de 'trig'.
+    - RETURN NULL quan és AFTER
+*/
+
 /*Exercici 1. Programar un trigger que comprovi que la comissió mai sigui més gran que el salari a l’hora d’inserir
 un empleat. El trigger s’anomenarà trig_comissio. Mostra els missatges d’error corresponents quan es dispari el
 trigger i escriu el joc de proves que has fet per provar el trigger.*/
-CREATE OR REPLACE FUNCTION validar_comissio()
+CREATE OR REPLACE FUNCTION validar_comissio() --func_comissio()
    RETURNS TRIGGER
 AS $$
 BEGIN
-    IF NEW.commission_pct * NEW.salary > NEW.salary THEN
-        RAISE EXCEPTION 'Error: La comissió no pot ser superior al salari';
+    IF NEW.commission_pct * NEW.salary > NEW.salary THEN -- CORECCIÓ: no multipliquis
+        RAISE EXCEPTION 'Error: La comissió no pot ser superior al salari'; -- CORECCIÓ: si posem només RAISE és per defecte EXCEPTION
     END IF;
 
     RETURN NEW;
@@ -16,8 +21,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE TRIGGER trig_comissio BEFORE INSERT ON employees FOR EACH ROW
-    EXECUTE PROCEDURE validar_comissio();
+CREATE TRIGGER trig_comissio BEFORE INSERT
+ON employees
+FOR EACH ROW
+EXECUTE PROCEDURE validar_comissio();
 
 /*JOC DE PROVES*/
 
@@ -27,7 +34,7 @@ VALUES (444, 'Pep', 'López', 'pep@itb.cat', '123.456.7890',  '2025-04-29', 'IT_
 
 --Insert amb error
 INSERT INTO employees (employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary, commission_pct, manager_id, department_id)
-VALUES (444, 'Pep', 'López', 'pep@itb.cat', '123.456.7890',  '2025-04-29', 'IT_PROG', 1000, 1.1, 100, 90);
+VALUES (444, 'Pep', 'López', 'pep@itb.cat', '123.456.7890',  '2025-04-29', 'IT_PROG', 1000, 1.1, 100, 90); -- 0.1 (salari) , 0.9 (comissió)
 
 --[2025-04-29 21:25:34] [P0001] ERROR: Error: La comissió no pot ser superior al salari
 
@@ -39,7 +46,7 @@ del departament sigui null al donar d’alta un nou departament a la taula DEPAR
 s’ha de mostrar el missatge d’error: 'El nom del departament no pot ser nul'. Escriu el joc de
 proves que has fet per provar el trigger.*/
 
-CREATE OR REPLACE FUNCTION validar_nomDept()
+CREATE OR REPLACE FUNCTION validar_nomDept() -- func_nom_departament_notnull
    RETURNS TRIGGER
 AS $$
 BEGIN
@@ -51,8 +58,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE TRIGGER trig_nom_departament_notnull BEFORE INSERT ON departments FOR EACH ROW
-    EXECUTE PROCEDURE validar_nomDept();
+CREATE TRIGGER trig_nom_departament_notnull BEFORE INSERT
+ON departments
+FOR EACH ROW
+EXECUTE PROCEDURE validar_nomDept();
     
 /*JOC DE PROVES*/
 --Insert correcte
@@ -84,20 +93,22 @@ CREATE TABLE RESAUDITAREMP(
     resultat VARCHAR(200)
 );
 
-CREATE OR REPLACE FUNCTION registrarCanvisEmployees()
+CREATE OR REPLACE FUNCTION func_auditartaulaemp()
    RETURNS TRIGGER
 AS $$
     DECLARE
         dades VARCHAR(200);
     BEGIN
-        dades = CONCAT('Nom Trigger: ', TG_NAME, ' - Moment: ', TG_WHEN, ' - Nivell: ', TG_LEVEL, ' - Operació: ', TG_OP);
+        dades = CONCAT('Nom Trigger: ', TG_NAME, ' - Moment: ', TG_WHEN, ' - Nivell: ', TG_LEVEL, ' - Operació: ', TG_OP); -- CORRECCIÓ: M'ha faltat: NOW(). Separar per -, sense text.
         INSERT INTO resauditaremp (resultat) VALUES (dades);
-    RETURN NEW;
+    RETURN NEW; --CORRECCIÓ: RETURN NULL!!!!!!!! (quan fem after no cal NEW, perquè l'operació ja s'ha fet)
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trig_auditartaulaemp AFTER INSERT OR UPDATE OR DELETE ON employees FOR EACH ROW
-    EXECUTE PROCEDURE registrarCanvisEmployees();
+CREATE TRIGGER trig_auditartaulaemp AFTER INSERT OR UPDATE OR DELETE
+ON employees
+FOR EACH ROW
+EXECUTE PROCEDURE func_auditartaulaemp();
 
 
 /*JOC DE PROVES*/
