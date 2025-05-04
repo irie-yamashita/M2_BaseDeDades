@@ -12,7 +12,7 @@ CREATE OR REPLACE FUNCTION validar_comissio() --func_comissio()
    RETURNS TRIGGER
 AS $$
 BEGIN
-    IF NEW.commission_pct * NEW.salary > NEW.salary THEN -- CORECCIÓ: no multipliquis
+    IF NEW.commission_pct > NEW.salary THEN -- CORECCIÓ: no multipliquis
         RAISE EXCEPTION 'Error: La comissió no pot ser superior al salari'; -- CORECCIÓ: si posem només RAISE és per defecte EXCEPTION
     END IF;
 
@@ -46,7 +46,7 @@ del departament sigui null al donar d’alta un nou departament a la taula DEPAR
 s’ha de mostrar el missatge d’error: 'El nom del departament no pot ser nul'. Escriu el joc de
 proves que has fet per provar el trigger.*/
 
-CREATE OR REPLACE FUNCTION validar_nomDept() -- func_nom_departament_notnull
+CREATE OR REPLACE FUNCTION func_nom_departament_notnull() -- func_nom_departament_notnull
    RETURNS TRIGGER
 AS $$
 BEGIN
@@ -61,7 +61,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trig_nom_departament_notnull BEFORE INSERT
 ON departments
 FOR EACH ROW
-EXECUTE PROCEDURE validar_nomDept();
+EXECUTE PROCEDURE func_nom_departament_notnull();
     
 /*JOC DE PROVES*/
 --Insert correcte
@@ -99,9 +99,9 @@ AS $$
     DECLARE
         dades VARCHAR(200);
     BEGIN
-        dades = CONCAT('Nom Trigger: ', TG_NAME, ' - Moment: ', TG_WHEN, ' - Nivell: ', TG_LEVEL, ' - Operació: ', TG_OP); -- CORRECCIÓ: M'ha faltat: NOW(). Separar per -, sense text.
+        dades = CONCAT('Nom Trigger: ', TG_NAME, ' - Moment: ', TG_WHEN, ' - Nivell: ', TG_LEVEL, ' - Operació: ', TG_OP, ' - Data: ', NOW()); -- CORRECCIÓ: M'ha faltat: NOW(). Separar per -, sense text.
         INSERT INTO resauditaremp (resultat) VALUES (dades);
-    RETURN NEW; --CORRECCIÓ: RETURN NULL!!!!!!!! (quan fem after no cal NEW, perquè l'operació ja s'ha fet)
+    RETURN NULL; --CORRECCIÓ: RETURN NULL!!!!!!!! (quan fem after no cal NEW, perquè l'operació ja s'ha fet)
 END;
 $$ LANGUAGE plpgsql;
 
