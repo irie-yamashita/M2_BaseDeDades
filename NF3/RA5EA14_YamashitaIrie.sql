@@ -24,7 +24,7 @@ CREATE OR REPLACE FUNCTION func_tests_sel (par_data DATE) RETURNS SETOF test_typ
 
     BEGIN
         FOR var_test IN curs_test LOOP
-            RETURN  NEXT var_test;
+            RETURN NEXT var_test;
         END LOOP;
         RETURN ;
     END;

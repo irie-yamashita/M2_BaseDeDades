@@ -1,12 +1,18 @@
 /*EA12. Cursors (2) - Irie Yamashita*/
 
+/*CORRECCIÓ:
+    - Noms cursors: curs_...
+    - Nom RECORD: reg_...
+    - Tancar cursors (CLOSE)
+*/
+
 /*Exercici 1. Programar un bloc anònim que mostri les següents dades de tots els departaments: el nom, el location_id i el nom de la ciutat on es troben.
 Aquest exercici s’ha de fer amb la clàusula:*/
 
 -- a) OPEN, FETCH, CLOSE i utilitza només variables tipus %TYPE
 DO $$
 DECLARE
-    dept_cur CURSOR FOR
+    dept_cur CURSOR FOR -- curs_dept
     SELECT d.department_name, d.location_id, l.city
     FROM departments d
     JOIN locations l USING (location_id);
@@ -21,7 +27,7 @@ BEGIN
         EXIT WHEN NOT FOUND;
         RAISE NOTICE '* % % %', var_deptName, var_locID, var_ciutat;
     END LOOP;
-
+    CLOSE dept_cur; --!!!!
 END;
 $$ LANGUAGE plpgsql;
 
@@ -50,12 +56,12 @@ Aquest exercici s’ha de fer amb la clàusula:*/
 -- a) OPEN, FETCH, CLOSE i utilitza una variable tipus RECORD.
 DO $$
 DECLARE
-    emp_cur CURSOR FOR
+    emp_cur CURSOR FOR --curs_emp
     SELECT e.employee_id, e.first_name, e.department_id, d.department_name
     FROM employees e
     JOIN departments d USING (department_id);
 
-    rec_employee RECORD;
+    rec_employee RECORD; --reg_emp
 BEGIN
     OPEN emp_cur;
     LOOP
@@ -64,7 +70,7 @@ BEGIN
         RAISE NOTICE '% % - % %', rec_employee.employee_id, rec_employee.first_name,
         rec_employee.department_id, rec_employee.department_name;
     END LOOP;
-
+    CLOSE emp_cur;
 END;
 $$ LANGUAGE plpgsql;
 

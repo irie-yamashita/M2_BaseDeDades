@@ -1,5 +1,15 @@
 /*EA13. Cursors (3) - Irie Yamashita*/
 
+/*Correccions:
+    - Noms cursors: curs_...
+    - Nom RECORD: reg_...
+    - Tancar cursors (CLOSE)
+    - Afegir IS TRUE (opcional)
+    - Bloc IF NOT FOOUND THEN...
+
+    Repassar ex 03 i 04.
+*/
+
 /*01*/
 DO $$
 DECLARE
@@ -16,7 +26,7 @@ BEGIN
         EXIT WHEN NOT FOUND;
         RAISE NOTICE 'ID: % - Cognom: %', rec_employee.employee_id, rec_employee.last_name;
     END LOOP;
-
+    CLOSE emp_cur; --!!!!!
 END;
 $$ LANGUAGE plpgsql;
 
@@ -32,7 +42,7 @@ DECLARE
     var_deptId INTEGER = :v_deptID;
 
 BEGIN
-    IF func_comp_dep(var_deptId) THEN
+    IF func_comp_dep(var_deptId) THEN --IS TRUE
         FOR emp IN emp_cur (var_deptId) LOOP
             RAISE NOTICE 'ID: % - Cognom: %', emp.employee_id, emp.last_name;
         END LOOP;
@@ -78,6 +88,7 @@ CREATE OR REPLACE FUNCTION func_emps_dep (par_emplID EMPLOYEES.EMPLOYEE_ID%TYPE)
     BEGIN
         FOR empl IN curs_emp LOOP
             RETURN  NEXT empl;
+            RAISE NOTICE 'info %', empl; -- Correcció: afegir imprimir info...
         END LOOP;
 	    --RETURN; -- OPCIONAL
     END;
@@ -95,6 +106,7 @@ CREATE OR REPLACE FUNCTION func_emps_dep (par_emplID EMPLOYEES.EMPLOYEE_ID%TYPE)
     BEGIN
         FOR empl IN SELECT * FROM employees WHERE department_id= par_emplID LOOP
             RETURN  NEXT empl;
+            RAISE NOTICE 'info %', empl;
         END LOOP;
 	    --RETURN; -- OPCIONAL
     END;
@@ -102,7 +114,9 @@ $$ LANGUAGE plpgsql;
 
 */
 
-SELECT  func_emps_dep(10);
+/*SELECT  func_emps_dep(10);*/ -- !!! Correcció: no cridis a la funció, fes un bloc anònim
+
+
 
 
 
@@ -115,12 +129,29 @@ CREATE OR REPLACE FUNCTION func_emps_dep2 (par_emplID EMPLOYEES.EMPLOYEE_ID%TYPE
 
     BEGIN
         RETURN QUERY SELECT * FROM employees WHERE department_id= par_emplID;
+            RAISE NOTICE 'info %', empl; -- Correcció: afegir imprimir info...
         --RETURN; -- OPCIONAL
     END;
 $$ LANGUAGE plpgsql;
 
-SELECT func_emps_dep2(80);
+/*SELECT func_emps_dep2(80);*/
 
+/*Correcció: Afegir bloc anònim*/
+DO
+$$
+    DECLARE
+        var_department_id departments.department_id%TYPE := :v_department_id;
+        cur_employees CURSOR(var_department_id NUMERIC(11) ) FOR -- Cursor amb paràmetre
+        SELECT * FROM func_emps_dep(var_department_id);
+
+        var_employee employees%ROWTYPE;
+    BEGIN
+        FOR var_employee IN cur_employees(var_department_id)
+        LOOP
+            RAISE NOTICE '%', var_employee;
+        END LOOP;
+    END
+$$ LANGUAGE plpgsql;
 
 /*04*/
 CREATE TABLE EMP_NOU_SALARY AS
@@ -157,25 +188,30 @@ DO $$
         WHERE department_id = par_deptId;
 
         reg_empl RECORD;
+        var_novaComiss EMPLOYEES.COMMISSION_PCT%TYPE;
         var_deptId DEPARTMENTS.DEPARTMENT_ID%TYPE = :v_deptId;
 
     BEGIN
         OPEN curs_empl(var_deptId);
         LOOP
             FETCH curs_empl INTO reg_empl;
-            EXIT WHEN NOT FOUND;
-            IF reg_empl.commission_pct IS NULL THEN
-                UPDATE EMP_NOU_SALARY
-                SET commission_pct = 0
-                WHERE CURRENT OF curs_empl;
-            ELSE
-                UPDATE EMP_NOU_SALARY
-                SET commission_pct = commission_pct + 0.2
-                WHERE CURRENT OF curs_empl;
-            END IF;
-        END LOOP;
+            IF NOT FOUND THEN
+                RAISE NOTICE 'El departament % ja no té més empleats.', var_deptId;
+            EXIT;
 
-        RAISE NOTICE 'El departament % ja no té més empleats.', var_deptId;
+            IF reg_empl.commission_pct IS NULL THEN
+                var_novaComiss = 0;
+            ELSE
+                var_novaComiss = reg_empl.COMMISSION_PCT + 0.20;
+            END IF;
+
+            UPDATE EMP_NOU_SALARY
+            SET COMMISSION_PCT = var_novaComiss
+            WHERE CURRENT OF curs_emps;
+
+            EXIT WHEN NOT FOUND;
+        END LOOP;
+        CLOSE curs_empl;
 
     EXCEPTION
         WHEN OTHERS THEN

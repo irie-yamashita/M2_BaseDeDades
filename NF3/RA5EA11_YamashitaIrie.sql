@@ -1,5 +1,11 @@
 /*EA11. Cursors (1)*/
 
+/*CORRECCIONS
+    - T'has oblidat de fer el CLOSE en l'opció OPEN-FETCH-CLOSE.
+    - Llegeix bé els enunciats.
+    - IF NOT FOUND THEN ... (ex2)
+*/
+
 /*Exercici 1. Programar un bloc anònim que mostri les següents dades de tots els empleats: codi, nom, salari, comissió i data d’alta. Si la comissió és nula s’ha de mostrar 0. Aquest  exercici s’ha de fer amb la clàusula:*/
 
 --a) OPEN, FETCH, CLOSE i utilitzar una variable tipus %ROWTYPE
@@ -13,10 +19,15 @@ BEGIN
     OPEN emp_cur;
     LOOP
         FETCH emp_cur INTO emps_info;
-        EXIT WHEN NOT FOUND;
+        IF var_emp.COMMISSION_PCT IS NULL THEN --t'ha oblifat del IF !!!!
+            var_emp.COMMISSION_PCT := 0;
+            EXIT WHEN NOT FOUND;
+        END IF;
+
         RAISE NOTICE 'ID: % - Nom: % - Salari: %€ - Comissió: % - Data alta: %', emps_info.employee_id, emps_info.first_name,
         emps_info.salary, emps_info.commission_pct, emps_info.hire_date;
     END LOOP;
+    CLOSE curs_nom; --!!!!
 
 END;
 $$ LANGUAGE plpgsql;
@@ -45,7 +56,7 @@ CREATE OR REPLACE FUNCTION func_control_neg (par_salari  EMPLOYEES.SALARY%TYPE)
     RETURNS BOOLEAN AS
     $$
     BEGIN
-        IF par_salari <0 THEN
+        IF par_salari <0 THEN -- aquí potser podría haver fet al revés, és false quan és negatiu
             RETURN true; --és negatiu
         ELSE
             RETURN false;
@@ -60,14 +71,18 @@ DECLARE
     SELECT *
     FROM employees
     WHERE salary > var_minSalari;
-    emps_info EMPLOYEES%ROWTYPE;
+    emps_info EMPLOYEES%ROWTYPE; -- var_emp
 BEGIN
     OPEN emp_cur;
     LOOP
         FETCH emp_cur INTO emps_info;
+        IF NOT FOUND THEN /*BLOC AFEGIT*/
+            RAISE NOTICE 'Empleats no trobats';
+        END IF;
         EXIT WHEN NOT FOUND;
-        IF func_control_neg(emps_info.salary) THEN
-            RAISE NOTICE 'ERROR: salari negatiu i ha de ser positiu.';
+        
+        IF func_control_neg(emps_info.salary) IS TRUE THEN -- pots posar IS TRUE o omitir-ho
+            RAISE NOTICE 'ERROR: salari negatiu, ha de ser positiu.';
         ELSE
             RAISE NOTICE 'Codi: % - Nom: % - Salari: %€', emps_info.employee_id, emps_info.first_name,
             emps_info.salary;
