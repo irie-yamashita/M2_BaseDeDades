@@ -215,3 +215,185 @@ CALL proc_mostrar_emp_dept('Poma');
 [2025-05-07 17:09:23] [P0001] ERROR: El departament no existeix
 [2025-05-07 17:09:23] Where: PL/pgSQL function proc_mostrar_emp_dept(character varying) line 10 at RAISE
  */
+
+
+ /*04*/
+ 
+CREATE OR REPLACE FUNCTION func_comprv_residu(par_codiRes RESIDU.cod_residu%TYPE)
+RETURNS BOOLEAN AS $$
+    DECLARE
+        var_codiRes RESIDU.cod_residu%TYPE;
+    BEGIN
+        SELECT cod_residu
+        INTO STRICT var_codiRes
+        FROM residu
+        WHERE cod_residu = par_codiRes
+        LIMIT 1;
+        RETURN TRUE;
+
+        EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN FALSE;
+        WHEN OTHERS THEN
+            RAISE EXCEPTION '%,%', SQLERRM, SQLSTATE;
+    END;
+$$LANGUAGE plpgsql;
+
+SELECT func_comprv_residu(7124);
+SELECT func_comprv_residu(714);
+
+
+CREATE OR REPLACE FUNCTION func_comprv_data(par_dataInici DATE, par_dataFinal DATE)
+RETURNS BOOLEAN AS $$
+
+    BEGIN
+        IF(par_dataFinal < par_dataInici) THEN
+            RETURN FALSE;
+        ELSE
+            RETURN TRUE;
+        END IF;
+    END;
+$$LANGUAGE plpgsql;
+
+SELECT func_comprv_data('2025-05-07', '1998-07-12');
+SELECT func_comprv_data('1998-07-12', '2025-05-07');
+
+
+
+
+CREATE OR REPLACE PROCEDURE proc_residus (par_codiRes RESIDU.COD_RESIDU%TYPE, par_dataInici DATE, par_dataFinal DATE) AS
+    $$
+    DECLARE
+    curs_res CURSOR FOR
+    SELECT t.cod_residu, e.nom_empresa, d.nom_desti, t.data_enviament
+    FROM trasllat t
+    JOIN empresaproductora e USING(nif_empresa)
+    JOIN desti d USING (cod_desti)
+    WHERE cod_residu = par_codiRes
+    AND data_enviament BETWEEN  par_dataInici AND par_dataFinal;
+
+    BEGIN
+        IF func_comprv_residu(par_codiRes) IS TRUE THEN
+            IF func_comprv_data(par_dataInici, par_dataFinal) IS TRUE THEN
+                FOR var_res IN curs_res LOOP
+                    RAISE NOTICE 'El residu amb codi %, ha sigut generat per l`empresa amb nom % i transportat al destí % la data %',
+                    var_res.cod_residu, var_res.nom_empresa, var_res.nom_desti, var_res.data_enviament;
+                END LOOP;
+            ELSE
+                RAISE NOTICE 'Error: les dates estan malament!';
+            END IF;
+
+        ELSE
+            RAISE NOTICE 'ERROR: no existeix un residu amb el codi %!', par_codiRes;
+        END IF;
+
+    END;
+$$ LANGUAGE plpgsql;
+
+
+SELECT t.cod_residu, e.nom_empresa, d.nom_desti, t.data_enviament
+    FROM trasllat t
+    JOIN empresaproductora e USING(nif_empresa)
+    JOIN desti d USING (cod_desti)
+    WHERE cod_residu = 714 ORDER BY data_enviament;
+
+
+-- error cod_residu
+CALL proc_residus(7184, '2016-03-30', '2016-04-01');
+
+--error dates
+CALL proc_residus(714, '2030-03-30', '2016-04-01');
+
+--correcte
+CALL proc_residus(714, '2016-03-30', '2016-04-01');
+
+
+
+/*05*/
+CREATE OR REPLACE FUNCTION func_res_update()
+   RETURNS TRIGGER
+AS $$
+BEGIN
+    IF NEW.quantitat_residu < OLD.quantitat_residu THEN
+      RAISE EXCEPTION 'La quantitat nova no pot ser més petita que la quantitat actual.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trig_res_update BEFORE UPDATE
+ON residu
+FOR EACH ROW
+EXECUTE PROCEDURE func_res_update();
+
+-- error Update
+UPDATE residu SET quantitat_residu = 100 WHERE cod_residu = 714 AND nif_empresa = 'A-12000028';
+/*
+ [P0001] ERROR: La quantitat nova no pot ser més petita que la quantitat actual.
+ Where: PL/pgSQL function func_res_update() line 4 at RAISE
+ */
+
+-- Update correcte
+SELECT quantitat_residu FROM residu WHERE cod_residu = 714 AND nif_empresa = 'A-12000028'; --354
+UPDATE residu SET quantitat_residu = 555 WHERE cod_residu = 714 AND nif_empresa = 'A-12000028';
+SELECT quantitat_residu FROM residu WHERE cod_residu = 714 AND nif_empresa = 'A-12000028'; --555
+
+
+
+/*06*/
+CREATE OR REPLACE FUNCTION func_empresaProductora()
+   RETURNS TRIGGER
+AS $$
+BEGIN
+    IF TG_OP = 'INSERT' AND NEW.nom_empresa IS NULL THEN
+        RAISE 'El nom de l''empresa mo pot ser null" i no es fa la inserció.';
+    ELSIF TG_OP = 'UPDATE' AND NEW.ciutat_empresa <> OLD.ciutat_empresa THEN
+        RAISE 'No es pot canviar el nom de la ciutat';
+    ELSIF TG_OP = 'DELETE' THEN
+        RAISE 'No està permés eliminar cap registre';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trig_empresaProductora BEFORE INSERT OR UPDATE OR DELETE
+ON empresaproductora
+FOR EACH ROW
+EXECUTE PROCEDURE func_empresaProductora();
+
+
+SELECT* FROM empresaproductora;
+
+--error INSERT
+INSERT INTO empresaproductora (nif_empresa, nom_empresa, ciutat_empresa, activitat, aa_empresa)
+VALUES ('A-44440025', NULL, 'Barcelona', 'Informàtica', NULL );
+/*
+ [P0001] ERROR: El nom de l'empresa mo pot ser null" i no es fa la inserció.
+ Where: PL/pgSQL function func_empresaproductora() line 4 at RAISE
+ */
+
+-- INSERT correcte
+INSERT INTO empresaproductora (nif_empresa, nom_empresa, ciutat_empresa, activitat, aa_empresa)
+VALUES ('A-44440025', 'ITB', 'Barcelona', 'Informàtica', NULL );
+
+SELECT * from empresaproductora WHERE nom_empresa = 'ITB';
+
+-- error UPDATE
+UPDATE empresaproductora SET ciutat_empresa = 'Madrid' WHERE nif_empresa = 'A-44440025';
+/*
+ [P0001] ERROR: No es pot canviar el nom de la ciutat
+ Where: PL/pgSQL function func_empresaproductora() line 6 at RAISE
+ */
+
+ -- UPDATE correcte
+UPDATE empresaproductora SET nom_empresa = 'Institut Tecnològic de Barcelona' WHERE nif_empresa = 'A-44440025';
+SELECT * from empresaproductora WHERE nif_empresa = 'A-44440025';
+
+-- error DELETE
+DELETE FROM empresaproductora WHERE nif_empresa = 'A-44440025';
+/*
+ [P0001] ERROR: No està permés eliminar cap registre
+ Where: PL/pgSQL function func_empresaproductora() line 8 at RAISE
+ */
