@@ -1,0 +1,982 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>EXCEPCIONS, CURSORS, SOBRECÀRREGA i TRIGGERS</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-default_background {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.highlight-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.block-color-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: undefined; }
+.select-value-color-pink { background-color: rgba(225, 136, 179, 0.27); }
+.select-value-color-purple { background-color: rgba(168, 129, 197, 0.27); }
+.select-value-color-green { background-color: rgba(123, 183, 129, 0.27); }
+.select-value-color-gray { background-color: rgba(84, 72, 49, 0.15); }
+.select-value-color-transparentGray { background-color: undefined; }
+.select-value-color-translucentGray { background-color: undefined; }
+.select-value-color-orange { background-color: rgba(224, 124, 57, 0.27); }
+.select-value-color-brown { background-color: rgba(210, 162, 141, 0.35); }
+.select-value-color-red { background-color: rgba(244, 171, 159, 0.4); }
+.select-value-color-yellow { background-color: rgba(236, 191, 66, 0.39); }
+.select-value-color-blue { background-color: rgba(93, 165, 206, 0.27); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="1e96fdc2-e9af-8099-8ffc-feb2590e532c" class="page sans"><header><h1 class="page-title">EXCEPCIONS, CURSORS, SOBRECÀRREGA i TRIGGERS</h1><p class="page-description"></p></header><div class="page-body"><p id="1e96fdc2-e9af-80cd-b47a-cd1d8d3e7baa" class="">
+</p><nav id="1e96fdc2-e9af-80dc-a0a2-cab3c24fab9b" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#1e96fdc2-e9af-8030-99ec-ce21ac754d2c">EXCEPCIONS</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-80a2-9833-f0013908bb20"><strong>EXCEPCIONS PREDEFINIDES</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-8054-b67b-fedffed26073"><strong>EXCEPCIONS PERSONALITZADES</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-80e3-94a6-ef0e267ae7f2"><strong>FUNCIONS COMPROVADORES</strong></a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#1e96fdc2-e9af-80ba-bdfa-ed7ebc914075"><strong>CURSORS</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-80f2-a8f9-e66506c6c736">Declaració</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-80af-997b-de73cadd9608">OPEN-FETCH-CLOSE</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-808b-b768-d1e9d938d0fe">FOR…IN</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-80f2-b65c-fb5f680e5547">CURSOR com a RETURN</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-8032-aa2b-fcf5ab5d1f64">SETOF i RETURN NEXT</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-8038-9970-cebbd3b29287">SETOF i RETURN QUERY</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-8097-b27b-cc185c56664c">CURSORS amb PARÀMETRES</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1ec6fdc2-e9af-801c-a39d-c01067728df7">CURRENT OF → CURSORS + UPDATE/DELETE</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#1e96fdc2-e9af-8027-9305-eaa31038c765">TRIGGERS</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-8082-9f3e-e3b73ed759ca"><strong>Declaració TRIGGER</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-8088-bbf7-e5e5f6877930">Declaració FUNCIÓ</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e96fdc2-e9af-8053-939a-fd2288d75acb"><strong>VARIABLES</strong></a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1ec6fdc2-e9af-808a-a254-dc046a111cc0">RECURSOS</a></div></nav><p id="1e96fdc2-e9af-80b6-99f3-d06d969f94ca" class="">
+</p><h1 id="1e96fdc2-e9af-8030-99ec-ce21ac754d2c" class="">EXCEPCIONS</h1><p id="1e96fdc2-e9af-8004-aeed-fd411c02ba29" class="">
+</p><p id="1e96fdc2-e9af-80fe-a94a-d2e2aa86ffc8" class="">Per gestionar errors a PostgreSQL utilitzarem la clàusula <strong>EXCEPTION</strong>.</p><p id="1e96fdc2-e9af-809d-8230-df5314704ac7" class="">Si no troba cap error executarà el codi sense problemes, en el moment que salti un error, l&#x27;<strong>execució s&#x27;interromp</strong>, i el control passa a la llista de <strong>EXCEPTION</strong>.</p><p id="1e96fdc2-e9af-806a-b65d-f5ec10182d77" class="">
+</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-80b2-b205-c2b520696a30" class="code"><code class="language-SQL">DO $$
+    DECLARE
+	    -- variables
+    BEGIN
+	    --codi
+
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN -- WHEN sqlstate &#x27;P0002&#x27; THEN
+                RAISE EXCEPTION &#x27;ERROR: no dades&#x27;;
+        WHEN TOO_MANY_ROWS THEN
+                RAISE EXCEPTION &#x27;ERROR: retorna més files&#x27;;
+        WHEN OTHERS THEN
+	              RAISE EXCEPTION &#x27;%,%&#x27;, SQLERRM, SQLSTATE;
+
+    END;
+$$ LANGUAGE plpgsql;</code></pre><p id="1e96fdc2-e9af-80d0-b4d7-d17202a0237f" class="">
+</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1e96fdc2-e9af-8045-b7c7-e6be60c0f3c9"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p id="1e96fdc2-e9af-80ce-87ae-ccf8f953b157" class="">Podem posar l’excepció pel seu nom o pel sel SQLSTATE:</p><p id="1e96fdc2-e9af-8077-bd1e-ebc16f9a66f6" class=""><em>no_data_found → P0002 </em></p></div></figure><p id="1e96fdc2-e9af-802f-b8ab-d79c145919ee" class="">
+</p><h3 id="1e96fdc2-e9af-80a2-9833-f0013908bb20" class=""><strong>EXCEPCIONS PREDEFINIDES</strong></h3><p id="1e96fdc2-e9af-8031-92bc-d75a735eb5cb" class="">Aquestes són les excepcions ja definides:</p><figure id="1e96fdc2-e9af-80aa-808a-d705b36f6a43" class="image"><a href="image.png"><img style="width:709.984375px" src="image.png"/></a></figure><p id="1e96fdc2-e9af-800b-bba2-d96cca9938a9" class="">
+</p><p id="1e96fdc2-e9af-80cd-9b30-e156184cbb8c" class="">Les més freqüents:</p><ul id="1e96fdc2-e9af-801f-bd68-ffa9c0224021" class="bulleted-list"><li style="list-style-type:disc">P0002 → no_data_found</li></ul><ul id="1e96fdc2-e9af-80ac-b174-d8f0185a68e2" class="bulleted-list"><li style="list-style-type:disc">P0003 → too_many_rows </li></ul><p id="1e96fdc2-e9af-8094-b670-c7f6ff19c0e7" class="">
+</p><h3 id="1e96fdc2-e9af-8054-b67b-fedffed26073" class=""><strong>EXCEPCIONS PERSONALITZADES</strong></h3><p id="1e96fdc2-e9af-8008-8018-c52e580bdc4a" class="">Si volem crear excepcions personalitzades, simplement podem fer un <code>IF</code>  i dintre un <code>RAISE EXCEPTION</code>  o fer funcions a part.</p><p id="1e96fdc2-e9af-807f-a6dc-ef669b963338" class="">
+</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1e96fdc2-e9af-8037-97d4-d99aa3ef3980"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p id="1e96fdc2-e9af-8071-b29d-c15f09a6eca4" class="">Tens exemples de’excepcions ‘personalitzades’ als CURSORS</p></div></figure><p id="1e96fdc2-e9af-80f8-b103-c7f073e4ce04" class="">
+</p><h3 id="1e96fdc2-e9af-80e3-94a6-ef0e267ae7f2" class=""><strong>FUNCIONS COMPROVADORES</strong></h3><p id="1e96fdc2-e9af-8077-bb4c-cd832ae8ad02" class="">Puc fer que sigui una funció la que generi l’excepció personalitzada. Important posar <code><strong>INTO STRICT</strong></code><strong>  </strong>i capturar les diferents excepcions.</p><p id="1e96fdc2-e9af-8084-a0e8-e75afce194b0" class="">
+</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-8021-86a0-d50ecf2ce67f" class="code"><code class="language-SQL">CREATE OR REPLACE FUNCTION func_comprovadora(par_camp %TYPE)
+RETURNS BOOLEAN AS $$
+    DECLARE
+        var_camp %TYPE;
+    BEGIN
+        SELECT camp
+        INTO STRICT var_camp 
+        FROM taula
+        WHERE camp = camp;
+        RETURN TRUE;
+
+        EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN FALSE;
+        WHEN OTHERS THEN
+            RAISE EXCEPTION &#x27;ERROR GENERAL:&#x27;;
+            RAISE EXCEPTION &#x27;%,%&#x27;, SQLERRM, SQLSTATE;
+    END;
+$$LANGUAGE plpgsql;
+
+
+DO $$
+    DECLARE
+        var_camp %TYPE = :v_camp;
+    BEGIN
+
+        IF func_compv_dept(var_dept_id) THEN
+            RAISE NOTICE &#x27;El departament ja existeix!&#x27;;
+        ELSE
+            -- Faig INSERT o UPDATE...
+        END if;
+
+    END;
+$$;</code></pre><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1e96fdc2-e9af-80f0-b403-df04054ca8c8"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p id="1e96fdc2-e9af-806e-b574-eb25c3b15e86" class="">Fixa’t com en l’exemple el bloc <code>EXCEPTION</code>  es trobo en la funció, i no en el bloc anònim.</p></div></figure><p id="1e96fdc2-e9af-80a3-b67a-e9e96377d3fd" class="">
+</p><h1 id="1e96fdc2-e9af-80ba-bdfa-ed7ebc914075" class=""><strong>CURSORS</strong></h1><p id="1e96fdc2-e9af-80e6-8301-c69489fe07e6" class="">Els cursors ens serveixen per guardar la informació de consultes que retornen <strong>més d’una fila</strong>. Seria semblant a un array de files, però amb la diferència que no ens permet accedir per <strong>índex</strong>. És com un ‘apuntador’.</p><p id="1e96fdc2-e9af-8013-bc1a-f48d0490b884" class="">
+</p><h3 id="1e96fdc2-e9af-80f2-a8f9-e66506c6c736" class="">Declaració</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-8088-b9ac-f3d0be851186" class="code"><code class="language-SQL">    curs_nom CURSOR FOR
+    SELECT *
+    FROM taula;
+    -- var_nom puc declarar una variable ROWTYPE o TYPE o RECORD</code></pre><p id="1e96fdc2-e9af-803e-83df-f993742c2a70" class="">
+</p><p id="1e96fdc2-e9af-8045-9d9b-ff01be97d489" class="">Hi ha dues maneres de <strong>recórrer </strong>la info d’un cursor:</p><ul id="1e96fdc2-e9af-8001-bb80-d6b0250f532d" class="bulleted-list"><li style="list-style-type:disc"><strong>OPEN-FETCH-CLOSE</strong></li></ul><ul id="1e96fdc2-e9af-80f5-b7ca-cfe8f14c9339" class="bulleted-list"><li style="list-style-type:disc"><strong>FOR…IN</strong></li></ul><p id="1e96fdc2-e9af-801d-b6d9-f794c2aec0b9" class="">
+</p><h3 id="1e96fdc2-e9af-80af-997b-de73cadd9608" class="">OPEN-FETCH-CLOSE</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-800a-9e9b-f42cca76d219" class="code"><code class="language-SQL">	OPEN curs_nom;
+	LOOP
+
+		FETCH curs_nom INTO var_nom;
+		EXIT WHEN NOT FOUND;
+		RAISE NOTICE &#x27;Mostro info %&#x27;, var_nom.info1;
+	END LOOP;
+	CLOSE curs_nom;</code></pre><p id="1e96fdc2-e9af-804a-8b9a-f86af0d28fc3" class="">
+</p><ul id="1e96fdc2-e9af-80cb-8ce8-e802ce2a37ff" class="toggle"><li><details open=""><summary>Codi complet i explicat </summary><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-8049-8bb7-ec559e42431b" class="code"><code class="language-SQL">DO $$
+	DECLARE
+    curs_nom CURSOR FOR
+    SELECT *
+    FROM taula;
+    
+		var_nom TAULA%ROWTYPE;
+	BEGIN
+		OPEN curs_nom;
+		LOOP
+	
+			FETCH curs_nom INTO var_nom;
+			EXIT WHEN NOT FOUND;
+			RAISE NOTICE &#x27;Mostro info %&#x27;, var_nom.info1;
+		END LOOP;
+		CLOSE curs_nom;
+END
+$$ LANGUAGE plpgsql;</code></pre><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-8000-8024-d4b7df05154b" class="code"><code class="language-SQL">DO $$
+	DECLARE
+		--declarem el cursor amb nom curs_emps
+		curs_emps CURSOR FOR
+		SELECT *
+		FROM EMPLOYEES;
+		--declarem la variable ROWTYPE
+		var_emp EMPLOYEES%ROWTYPE;
+	BEGIN
+		--obrim el cursor curs_emps
+		OPEN curs_emps;
+		LOOP
+		
+		--agafem la primera fila del resultat de l’execució del cursor
+		--i la posem a la variable ROWTYPE var_emp
+		FETCH curs_emps INTO var_emp;
+		EXIT WHEN NOT FOUND;
+		--mostrem el contigut de la variable var_emp
+		RAISE NOTICE &#x27;L` empleat amb id %, amb nom %.&#x27;, var_emp.EMPLOYEE_ID,
+		var_emp.FIRST_NAME;
+		--fins que hi hagi files al cursor anem recorrent fila a fila
+		END LOOP;
+		--com que ja no hi ha més files pode tancar el cursor
+		CLOSE curs_emps;
+END
+$$ LANGUAGE plpgsql;</code></pre></details></li></ul><p id="1e96fdc2-e9af-809d-9619-fc8ab841e7a4" class="">
+</p><h3 id="1e96fdc2-e9af-808b-b768-d1e9d938d0fe" class="">FOR…IN</h3><p id="1e96fdc2-e9af-80aa-a3e4-fff1f50902f4" class="">En el <code>for…in</code> no fa falta declarar variable per guardar la info, crea per defecte una ROWTYPE. És com a JS for(let alumne of alumnes)…</p><p id="1e96fdc2-e9af-80f2-b184-da8616287fb7" class="">
+</p><p id="1e96fdc2-e9af-80ae-b3c9-d58eb1054547" class="">El for obre i tanca el cursor de manera automàtica, no cal indicar-ho.</p><p id="1e96fdc2-e9af-8095-83d8-da393b32ef49" class="">
+</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-8008-9455-de67ad776af4" class="code"><code class="language-SQL">    FOR var_nom IN curs_nom LOOP
+        RAISE NOTICE &#x27;Mostro info %&#x27;, var_nom.info1;
+    END LOOP;</code></pre><p id="1e96fdc2-e9af-804c-ba71-fe92ab06d5b8" class="">
+</p><ul id="1e96fdc2-e9af-8016-8c3c-ee3cc4cf1864" class="toggle"><li><details open=""><summary>Codi complet i explicat </summary><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-8022-9e44-cd4cba8148c1" class="code"><code class="language-SQL">DO $$
+	DECLARE
+    curs_nom CURSOR FOR
+    SELECT *
+    FROM taula;
+	BEGIN
+    FOR var_nom IN curs_nom LOOP
+        RAISE NOTICE &#x27;Mostro info %&#x27;, var_nom.info1;
+    END LOOP;
+END;
+$$;</code></pre><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-809d-821f-fe03db2882c1" class="code"><code class="language-SQL">DO $$
+	DECLARE
+		--declarem el cursor amb nom curs_emps
+		curs_emps CURSOR FOR
+		SELECT *
+		FROM EMPLOYEES;
+	BEGIN
+	--El FOR declara la variable ROWTYPE var_emp, obre el cursor i va omplint
+	--la variable amb cada fila del resultat de l’execució del cursor, i quan
+	--ha recorregut totes les files tanca el cursor
+	FOR var_emp IN curs_emps LOOP
+	--mostrem el contigut de la variable var_emp
+	RAISE NOTICE &#x27;L` empleat amb id %, amb nom %&#x27;, var_emp.EMPLOYEE_ID,
+	var_emp.FIRST_NAME;
+	END LOOP;
+END;
+$$;</code></pre></details></li></ul><p id="1e96fdc2-e9af-8053-942a-f4db74effbb0" class="">
+</p><p id="1ec6fdc2-e9af-80f6-ae95-caf8c3bc202b" class="">
+</p><h3 id="1e96fdc2-e9af-80f2-b65c-fb5f680e5547" class="">CURSOR com a RETURN</h3><p id="1ec6fdc2-e9af-80df-b8c8-d0623323b906" class="">
+</p><p id="1ec6fdc2-e9af-8072-8b80-d5dbf2b254c0" class="">Si la nostra funció retorna info d’un cursor, llavors hem d’utilitzar:</p><ul id="1e96fdc2-e9af-8063-b7a6-f5534c749a39" class="bulleted-list"><li style="list-style-type:disc"><strong>SETOF i RETURN NEXT</strong></li></ul><ul id="1e96fdc2-e9af-806f-ab49-d536a0587302" class="bulleted-list"><li style="list-style-type:disc"><strong>SETOF i RETURN QUERY</strong></li></ul><p id="1e96fdc2-e9af-8057-a054-d77fb3ce2a66" class="">
+</p><h3 id="1e96fdc2-e9af-8032-aa2b-fcf5ab5d1f64" class="">SETOF i RETURN NEXT</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-809e-9e27-eea9fa746a08" class="code"><code class="language-SQL">CREATE OR REPLACE FUNCTION func_nom (par_nom %TYPE) RETURNS SETOF TAULA AS
+    $$
+    DECLARE
+        var_nom TAULA; /*EMPLOYEES%ROWTYPE*/
+
+        curs_nom CURSOR FOR
+        SELECT * FROM taula
+        WHERE department_id = par_nom ;
+
+    BEGIN
+        FOR var_nom IN curs_nom LOOP
+            RETURN  NEXT var_nom;
+            RAISE NOTICE &#x27;info %&#x27;, var_nom;
+	    --RETURN; -- OPCIONAL
+    END;
+$$ LANGUAGE plpgsql;</code></pre><p id="1e96fdc2-e9af-809f-8857-c2e54c49bc80" class="">
+</p><h3 id="1e96fdc2-e9af-8038-9970-cebbd3b29287" class="">SETOF i RETURN QUERY</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-80da-8c4d-fcbc96be034f" class="code"><code class="language-SQL">CREATE OR REPLACE FUNCTION func_nom (par_nom %TYPE) RETURNS SETOF TAULA AS
+    $$
+    DECLARE
+        var_nom TAULA; /*EMPLOYEES%ROWTYPE*/
+
+    BEGIN
+        RETURN QUERY SELECT * FROM taula WHERE department_id= par_nom;
+            RAISE NOTICE &#x27;info %&#x27;, var_nom;
+        --RETURN; -- OPCIONAL
+    END;
+$$ LANGUAGE plpgsql;
+</code></pre><p id="1e96fdc2-e9af-80c7-9650-f2d8cc3af61c" class="">
+</p><p id="1e96fdc2-e9af-804d-8592-d8ec47325a1e" class="">
+</p><p id="1e96fdc2-e9af-80ac-a67c-df8e1c53345e" class=""><strong>CRIDA DE LES FUNCIONS</strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-803b-be58-f0f19aaa7981" class="code"><code class="language-SQL">DO
+$$
+    DECLARE
+        var_department_id departments.department_id%TYPE := :v_department_id;
+        
+        curs_nom CURSOR(var_department_id NUMERIC(11) ) FOR -- Cursor amb paràmetre
+        SELECT * FROM func_nom (var_department_id);
+
+        var_nom taula%ROWTYPE;
+    BEGIN
+        FOR var_nom IN curs_nom (var_department_id)
+        LOOP
+            RAISE NOTICE &#x27;%&#x27;, var_nom ;
+        END LOOP;
+    END
+$$ LANGUAGE plpgsql;</code></pre><p id="1e96fdc2-e9af-8077-9008-cdb8f35067cd" class="">
+</p><h3 id="1e96fdc2-e9af-8097-b27b-cc185c56664c" class="">CURSORS amb PARÀMETRES</h3><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-8098-b2f7-d91e42633532" class="code"><code class="language-SQL">DO $$
+DECLARE
+    emp_cur CURSOR (par_dept_id INTEGER) FOR
+    SELECT employee_id, last_name
+    FROM employees
+    WHERE department_id = par_dept_id;
+
+    rec_employee RECORD;
+BEGIN
+    OPEN emp_cur (:v_deptId); --posem valor del paràmetre quan fem OPEN
+    LOOP
+        FETCH emp_cur INTO rec_employee;
+        EXIT WHEN NOT FOUND;
+        RAISE NOTICE &#x27;ID: % - Cognom: %&#x27;, rec_employee.employee_id, rec_employee.last_name;
+    END LOOP;
+
+END;
+$$ LANGUAGE plpgsql;</code></pre><p id="1ec6fdc2-e9af-807c-9fc5-e430877646df" class="">
+</p><p id="1ec6fdc2-e9af-8005-ab24-da0e28c7bd68" class="">
+</p><h3 id="1ec6fdc2-e9af-801c-a39d-c01067728df7" class="">CURRENT OF → CURSORS + UPDATE/DELETE</h3><p id="1ec6fdc2-e9af-80f5-84fa-f2634c4db083" class="">Vull esborrar tot els empleats amb comissió null.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1ec6fdc2-e9af-809c-9c66-e8455c959736" class="code"><code class="language-SQL">DO $$
+DECLARE
+    curs_emp CURSOR FOR
+    SELECT *
+    FROM EMP_WITH_COMISS;
+BEGIN
+    FOR var_emp IN curs_emp LOOP
+        IF var_emp.commission_pct IS NULL THEN
+            DELETE FROM EMP_WITH_COMISS
+            WHERE CURRENT OF curs_emp;
+        END IF;
+
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;</code></pre><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="1ec6fdc2-e9af-8047-9358-eb27413fc735"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p id="1ec6fdc2-e9af-800d-bb83-e0408b134883" class="">IMPORTANT: no es pot utilitzar <code>CURRENT OF</code>  quan hem fet un cursor amb un <code>JOIN</code>  o un <code>GROUP BY</code> !!</p></div></figure><p id="1ec6fdc2-e9af-807e-94aa-efef45b11826" class="">
+</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1ec6fdc2-e9af-808e-afaa-f0c484a07172" class="code"><code class="language-SQL">UPDATE EMP_NOU_SALARY
+SET SALARY = var_nouSal
+WHERE CURRENT OF curs_emps;</code></pre><p id="1ec6fdc2-e9af-809c-9bf2-e83816a05b7f" class="">
+</p><p id="1ec6fdc2-e9af-80a4-8140-e3060d827359" class="">Alternativa:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1ec6fdc2-e9af-8030-a891-e76e7f271082" class="code"><code class="language-SQL">    FOR var_emp IN curs_emp LOOP
+        IF var_emp.commission_pct IS NULL THEN
+            DELETE FROM EMP_WITH_COMISS
+            WHERE employee_id = var_emp.employee_id;
+        END IF;
+
+    END LOOP;</code></pre><p id="1ec6fdc2-e9af-80e5-8c63-dbc0f22ddfbb" class="">
+</p><p id="1ec6fdc2-e9af-8014-b29d-ca343ae4a3f2" class="">
+</p><p id="1e96fdc2-e9af-8040-8e31-f1ca0bd2a43e" class="">
+</p><hr id="1e96fdc2-e9af-8053-b344-e335698a84fb"/><h1 id="1e96fdc2-e9af-8027-9305-eaa31038c765" class="">TRIGGERS</h1><p id="1e96fdc2-e9af-80cb-a57a-c886ff5c20e0" class="">Els triggers disparen una alguna cosa (una funció normalment) quan es produeix un <strong>INSERT, UPDATE, DELETE </strong>o <strong>TRUNCATE</strong>.</p><p id="1e96fdc2-e9af-80d8-8878-c65d8532134d" class="">
+</p><p id="1e96fdc2-e9af-80b5-bd8f-f8787b08dc0e" class="">Tenim 3 elements: (recorda exemple de classe Agustí-Ashmed-Martí)</p><ul id="1e96fdc2-e9af-80d3-bfa7-c0e71e51c54b" class="bulleted-list"><li style="list-style-type:disc">On es produeix el <strong>INSERT, UPDATE, DELETE </strong>o <strong>TRUNCATE. </strong>El que fa saltar el trigger.</li></ul><ul id="1e96fdc2-e9af-805e-a207-c456108ea052" class="bulleted-list"><li style="list-style-type:disc"><strong>Trigger</strong>: és el que està pendent de que es produeixi x cosa per disparar la funció.</li></ul><ul id="1e96fdc2-e9af-80ba-84e2-c43bdf556932" class="bulleted-list"><li style="list-style-type:disc"><strong>Funció</strong>: és una funció sense paràmetres. I ha de tenir un RETURNS de tipus <strong>TRIGGER</strong>.</li></ul><p id="1e96fdc2-e9af-802b-b209-c5612d4a2090" class="">
+</p><h3 id="1e96fdc2-e9af-8082-9f3e-e3b73ed759ca" class=""><strong>Declaració TRIGGER</strong></h3><p id="1e96fdc2-e9af-80c2-9e38-e88894b166d2" class="">Aquesta seria l’estructura bàsica per definir un <strong>trigger</strong>:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-8089-9075-cc0fd695a2f1" class="code"><code class="language-SQL">CREATE TRIGGER trig_nom BEFORE INSERT
+ON TAULA
+FOR EACH ROW
+EXECUTE PROCEDURE func_nom();</code></pre><p id="1e96fdc2-e9af-8091-993f-fa69413706d9" class="">
+</p><p id="1e96fdc2-e9af-8061-82e8-ecdb37af4cd4" class=""><strong>Coses a tenir en compte:</strong></p><ul id="1e96fdc2-e9af-80bd-b7e3-dc32fb300286" class="bulleted-list"><li style="list-style-type:disc">1)<strong> </strong><mark class="highlight-purple"><strong>BEFORE | AFTER</strong></mark><strong>: </strong>indiquem <strong>quan </strong>s’activarà.</li></ul><ul id="1e96fdc2-e9af-803b-903d-d2be83c51ca2" class="bulleted-list"><li style="list-style-type:disc">2) <mark class="highlight-orange"><strong>INSERT | UPDATE | DELETE: </strong></mark><mark class="highlight-default">indiquem </mark><mark class="highlight-default"><strong>quin </strong></mark><mark class="highlight-default">és esdeveniment que invoca el disparador.</mark></li></ul><ul id="1e96fdc2-e9af-8003-8776-fbb1e2696505" class="bulleted-list"><li style="list-style-type:disc">3)<mark class="highlight-teal"><strong> FOR EACH ROW | STATEMENT</strong></mark><strong> :</strong> Si posem el <code>ROW</code>, es dispararà tants cops com files. En canvi, el <code>STATMENT </code>es dispararà 1 cop.</li></ul><p id="1e96fdc2-e9af-80a5-a20a-fefdfd05b7fa" class="">
+</p><p id="1e96fdc2-e9af-80cf-80d5-f8daa9b199a4" class="">També podem crear un trigger que sigui invocat <strong>per diversos esdeveniments</strong>. Llavors a la funció hauré d’utilitzar la variable <mark class="highlight-blue"><strong>TG_OP</strong></mark><strong> </strong>(indica l’operació/esdeveniment):</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-8073-a7cb-db7880b3a685" class="code"><code class="language-SQL">CREATE TRIGGER trig_esdv_multiple AFTER INSERT OR UPDATE OR DELETE
+ON TAULA
+FOR EACH ROW
+EXECUTE PROCEDURE func_esdv_multiple();</code></pre><p id="1e96fdc2-e9af-80e8-a2e6-cb95fce87fdd" class="">
+</p><h3 id="1e96fdc2-e9af-8088-bbf7-e5e5f6877930" class="">Declaració FUNCIÓ</h3><p id="1e96fdc2-e9af-80ce-a36e-ea976fec2503" class="">El tipus de retorn és <strong>TRIGGER</strong>. No té paràmetres.</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-80ec-8735-ca4a03db68a1" class="code"><code class="language-SQL">CREATE OR REPLACE FUNCTION func_nom()
+   RETURNS TRIGGER
+AS $$
+BEGIN
+    IF condició THEN
+      RAISE EXCEPTION &#x27;Error 1&#x27;;
+    ELSIF condició THEN
+	    RAISE EXCEPTION &#x27;Error 2&#x27;;
+    ELSE
+	    RAISE EXCEPTION &#x27;Error 3&#x27;;
+    END IF;
+    
+    RETURN NEW; -- NULL si és AFTER
+END;
+$$ LANGUAGE plpgsql;</code></pre><p id="1e96fdc2-e9af-809c-82ce-e34be15010fa" class="">
+</p><p id="1e96fdc2-e9af-8002-9b5f-cbeef982308e" class=""><strong>Funció que gestiona múltiples esdeveniments:</strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-802e-b61d-fda24f470b3a" class="code"><code class="language-SQL">
+CREATE OR REPLACE FUNCTION func_esdv_multiple()
+   RETURNS TRIGGER
+AS $$
+BEGIN
+    IF TG_OP = &#x27;INSERT&#x27; THEN
+        RAISE &#x27;He fet un INSERT&#x27;;
+    ELSIF TG_OP = &#x27;UPDATE&#x27; THEN
+        RAISE &#x27;He fet un UPDATE&#x27;;
+    ELSIF TG_OP = &#x27;DELETE&#x27; AND OLD.commission_pct IS NULL THEN
+        RAISE &#x27;He fet un DELETE&#x27;;
+    END IF;
+
+    RETURN NULL; -- o NEW si és BEFORE
+END;
+$$ LANGUAGE plpgsql;</code></pre><p id="1e96fdc2-e9af-8040-ba83-ff12dc84d2b7" class="">
+</p><h3 id="1e96fdc2-e9af-8053-939a-fd2288d75acb" class=""><strong>VARIABLES</strong></h3><p id="1e96fdc2-e9af-80ab-a4ca-ff206b2b5dfc" class=""><strong>NEW i OLD</strong></p><ul id="1e96fdc2-e9af-80a7-aada-cde07fa41970" class="bulleted-list"><li style="list-style-type:disc"><strong>NEW:</strong> És un RECORD amb les dades noves. → INSERT/UPDATE</li></ul><ul id="1e96fdc2-e9af-8090-bd89-e7c3647aba30" class="bulleted-list"><li style="list-style-type:disc"><strong>OLD:</strong> És un RECORD amb les dades anteriors (antigues). → UPDATE/DELETE</li></ul><p id="1e96fdc2-e9af-80d1-829d-df4c0539af14" class="">
+</p><p id="1e96fdc2-e9af-8020-aa07-d13212ee184e" class=""><strong>ALTRES</strong></p><ul id="1e96fdc2-e9af-808e-8c37-e861d296a2bf" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-purple"><mark class="highlight-yellow_background"><strong>TG_NAME</strong></mark></mark><mark class="highlight-yellow_background"> → Tipus de dada name; variable que conté el </mark><mark class="highlight-purple"><mark class="highlight-yellow_background"><strong>nom del disparador</strong></mark></mark><mark class="highlight-yellow_background"> que està usant la funció actualment. Exemple: trig_auditartaulaemp</mark></li></ul><ul id="1e96fdc2-e9af-8026-8289-e8a6a980ec2e" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-purple"><mark class="highlight-yellow_background"><strong>TG_WHEN </strong></mark></mark><mark class="highlight-yellow_background"><strong>→ </strong></mark><mark class="highlight-yellow_background">Tipus de dada text; una cadena de text amb el valor </mark><mark class="highlight-yellow_background"><strong>BEFORE o AFTER</strong></mark><mark class="highlight-yellow_background"> depenent de com el disparador que està usant la funció actualment ha estat definit.</mark></li></ul><ul id="1e96fdc2-e9af-80f1-92ce-ecb911f4c538" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-purple"><mark class="highlight-yellow_background"><strong>TG_LEVEL→</strong></mark></mark><mark class="highlight-yellow_background"> Tipus de dada text; una cadena de text amb el valor </mark><mark class="highlight-yellow_background"><strong>ROW o STATEMENT</strong></mark><mark class="highlight-yellow_background"> depenent de com el disparador que està usant la funció actualment ha estat definit</mark></li></ul><ul id="1e96fdc2-e9af-8087-a500-ffbbbbfc3119" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-purple"><mark class="highlight-yellow_background"><strong>TG_OP</strong></mark></mark><mark class="highlight-default"><mark class="highlight-yellow_background"><strong> → </strong></mark></mark><mark class="highlight-default"><mark class="highlight-yellow_background">Tipus de dada text; una cadena de text amb el valor </mark></mark><mark class="highlight-default"><mark class="highlight-yellow_background"><strong>INSERT, UPDATE o DELETE </strong></mark></mark><mark class="highlight-default"><mark class="highlight-yellow_background">depenent de l&#x27;operació que ha activat el disparador que està usant la funció actualment.</mark></mark></li></ul><ul id="1e96fdc2-e9af-8048-bc3e-d85e4c1551b5" class="bulleted-list"><li style="list-style-type:disc"><strong>TG_RELID </strong>→ Tipus de dada oid; l&#x27;identificador d&#x27;objecte de la taula que ha activat el disparador que està usant la funció actualment.</li></ul><ul id="1e96fdc2-e9af-80c4-b3f7-e66c02dc4af3" class="bulleted-list"><li style="list-style-type:disc"><strong>TG_RELNAME </strong>→ Tipus de dada name; el nom de la taula que ha activat el disparador que està usant la funció actualment. Aquesta variable és obsoleta i pot desaparèixer en el futur. Usar TG_TABLE_NAME</li></ul><ul id="1e96fdc2-e9af-808f-9d80-fd690df7acd5" class="bulleted-list"><li style="list-style-type:disc"><strong>TG_TABLE_NAME </strong>→ Tipus de dada name; el nom de la taula que ha activat el disparador que està usant la funció actualment.</li></ul><ul id="1e96fdc2-e9af-8093-aa72-cc8db7036a08" class="bulleted-list"><li style="list-style-type:disc"><strong>TG_TABLE_SCHEMA </strong>→ Tipus de dada name; el nom de la schema de la taula que ha activat el disparador que està usant la funció actualment.</li></ul><ul id="1e96fdc2-e9af-80fc-878a-c55b5bcb63e9" class="bulleted-list"><li style="list-style-type:disc"><strong>TG_NARGS</strong> → Tipus de dada integer; el nombre d&#x27;arguments donats al procediment en la sentència CREATE TRIGGER.</li></ul><ul id="1e96fdc2-e9af-80ce-b72d-fa49de10e680" class="bulleted-list"><li style="list-style-type:disc"><strong>TG_ARGV</strong>[] → Tipus de dada text array; els arguments de la sentència CREATE TRIGGER. L&#x27;índex comença a comptar des de 0. Index invàlids (menors que 0 o majors/iguals que tg_nargs) resulten en valors nuls.</li></ul><p id="1e96fdc2-e9af-80a9-ac3d-ff6307dde93c" class="">
+</p><ul id="1e96fdc2-e9af-80dc-8c6e-fe7631d84cf5" class="bulleted-list"><li style="list-style-type:disc"><mark class="highlight-purple"><mark class="highlight-yellow_background"><strong>NOW()</strong></mark></mark><mark class="highlight-yellow_background"> → Retorna dia i hora actual.</mark></li></ul><p id="1e96fdc2-e9af-80fc-8613-d727c17204cb" class="">
+</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1e96fdc2-e9af-806f-b8ed-f6fad361c948" class="code"><code class="language-SQL">&#x27;Nom Trigger: &#x27;, TG_NAME, &#x27; - Moment: &#x27;,
+TG_WHEN, &#x27; - Nivell: &#x27;, TG_LEVEL, &#x27; - Operació: &#x27;,
+TG_OP, &#x27; - Data: &#x27;, NOW()</code></pre><p id="1ec6fdc2-e9af-8080-9345-f09f240c10c6" class="">
+</p><p id="1ec6fdc2-e9af-80bc-933a-dd5d90e06fbd" class="">
+</p><p id="1ec6fdc2-e9af-8084-8b80-c01ad7b777aa" class="">
+</p><p id="1ec6fdc2-e9af-80a8-ab48-dbd84ab9d83c" class="">
+</p><h2 id="1ec6fdc2-e9af-808a-a254-dc046a111cc0" class="">RECURSOS</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1ec6fdc2-e9af-809f-834e-d96494c8a7d2" class="code"><code class="language-SQL">INSERT INTO employees (employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary, commission_pct, manager_id, department_id)
+VALUES (444, &#x27;Pep&#x27;, &#x27;López&#x27;, &#x27;pep@itb.cat&#x27;, &#x27;123.456.7890&#x27;,  &#x27;2025-04-29&#x27;, &#x27;IT_PROG&#x27;, 1000, 0.1, 100, 90);</code></pre><p id="1ec6fdc2-e9af-80a1-a075-c2935ea52812" class="">
+</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="1ec6fdc2-e9af-803c-8330-cc557d9dadb9" class="code"><code class="language-SQL">INSERT INTO empresaproductora (nif_empresa, nom_empresa, ciutat_empresa, activitat, aa_empresa)
+VALUES (&#x27;A-44440025&#x27;, &#x27;ITB&#x27;, &#x27;Barcelona&#x27;, &#x27;Informàtica&#x27;, NULL );</code></pre><p id="1ec6fdc2-e9af-807b-ba0a-ec7d8a07b7ad" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
