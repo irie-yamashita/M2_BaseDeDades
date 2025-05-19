@@ -268,3 +268,144 @@ db.productos.find({"name" : "iPhone X"}); //comrpovar
 //Buscar los documentos actualizados y listarlos mostrando los datos de forma más linda y ocultando las propiedades stock, categories y _id
 db.productos.find({"name": {$in: ["Mac mini", "iPhone X"]}}, {"stock": 0, "categories": 0, "_id": 0}).pretty();
 
+
+
+/*Ejercicio 12*/
+//Levantar el cliente de MongoDB en la base de datos catalogo
+mongo catalogo
+
+//Actualizar el producto con la propiedad name y el valor iPad Pro agregadole una categoría nueva llamada prime
+db.productos.updateOne(
+    {"name": "iPad Pro"},
+    {$push: {"categories": "prime"}}
+)
+
+db.productos.find({"name": "iPad Pro"});
+
+//Actualizar el producto con la propiedad name y el valor iPad Pro sacar la categoría agregada (último elemento de la propiedad categories)
+db.productos.updateOne(
+    {"name": "iPad Pro"},
+    {$pop: {"categories": 1}}
+)
+
+db.productos.find({"name": "iPad Pro"});
+
+
+//Actualizar el producto con la propiedad name y el valor iPhone SE sacar la primer categoría que tiene asignada
+//db.productos.find({"name": "iPhone SE"});
+
+db.productos.updateOne(
+    {"name": "iPhone SE"},
+    {$pop: {"categories": -1}}
+)
+
+db.productos.find({"name": "iPhone SE"});
+
+//Actualizat todos los documentos que tienen la propiedad price mayor a 2000 y agregarle la categoría expensive
+db.productos.updateMany(
+    {"price": {$gt : 2000}},
+    {$push: {"categories": "expensive"}}
+)
+
+db.productos.find().pretty();
+
+
+
+/*Ejercicio 13*/
+
+//Levantar el cliente de MongoDB en la base de datos catalogo
+mongo catalogo
+
+//Borrar todos los productos que tienen la categoía tv
+//db.productos.find({"categories": "tv"})
+db.productos.deleteMany({"categories": "tv"});
+
+db.productos.find({"categories": "tv"});
+
+
+//Borrar el producto que tiene la propiedad name con el valor Apple Watch Series 1
+//db.productos.find({"name": "Apple Watch Series 1"})
+db.productos.deleteOne({"name": "Apple Watch Series 1"});
+
+db.productos.find({"name": "Apple Watch Series 1"});
+
+
+//Obtener la propiedad _id del producto que tiene la propiedad name con el valor Mac mini
+db.productos.find({"name": "Mac mini"}, {"_id":1});
+
+//Utilizar el _id buscado para borrar el producto utilizando ese criterio
+db.productos.deleteOne({"_id": ObjectId("6825034c332cbfec6b167173")});
+
+db.productos.find({"name": "Mac mini"});
+
+
+
+/*Ejercicio 14*/
+
+//Importar el archivos de documentos products.json en la base de datos catalogo y utilizar la colección productos
+mongoimport --db catalogo --collection productos --drop --file C:\Users\Usuario\Desktop\MongoDb\arxius\products.json
+
+//Al importar los datos se deben borrar todos los datos anteriores de la colección
+
+//Buscar todos los documentos importados
+db.productos.find().pretty();
+
+
+
+/*Ejercicio 15*/
+
+//Levantar el cliente de MongoDB en la base de datos catalogo
+mongo catalogo
+
+//Buscar todos los productos y ordenarlos por la propiedad price ascendente
+db.productos.find().sort({"price": 1});
+
+//Buscar todos los productos y ordenarlos por la propiedad price descendente
+db.productos.find().sort({"price": -1});
+
+//Buscar todos los productos y ordenarlos por la propiedad stock ascendente
+db.productos.find().sort({"stock": 1});
+
+//Buscar todos los productos y ordenarlos por la propiedad stock descendente
+db.productos.find().sort({"stock": -1});
+
+//Buscar todos los productos y ordenarlos por la propiedad name ascendente
+db.productos.find().collation({locale: 'es', strength: 1 }).sort({"name":1});
+
+//Buscar todos los productos y ordenarlos por la propiedad name descendente
+db.productos.find().collation({locale: 'es', strength: 1 }).sort({"name":-1});
+
+
+
+/*Ejercicio 16*/
+
+//Levantar el cliente de MongoDB en la base de datos catalogo
+mongo catalogo
+
+//Mostrar sólo la propiedad name de los primeros 2 productos
+db.productos.find({}, {"name": 1, "_id": 0}).limit(2);
+
+//Mostrar sólo la propiedad name de los primeros 5 productos ordenados por nombre
+db.productos.find({}, {"name": 1, "_id": 0}).collation({locale: 'es', strength: 1}).sort({"name": 1}).limit(5);
+
+//Mostrar sólo la propiedad name de los últimos 5 productos ordenados por nombre
+db.productos.find({}, {"name": 1, "_id": 0}).collation({locale: 'es', strength: 1}).sort({"name": -1}).limit(5);
+
+
+
+
+/*Ejercicio 17*/
+//Levantar el cliente de MongoDB en la base de datos catalogo
+mongo catalogo
+
+//Mostrar todos los documentos de la colección products utilizando un paginador
+// Obtener los documentos paginados
+//El tamaño de la página tiene que ser de 5 documentos
+
+db.productos.countDocuments(); //tinc 21 documents, si vull
+
+db.productos.find().skip(0).limit(5);
+db.productos.find().skip(5).limit(5);
+db.productos.find().skip(10).limit(5);
+db.productos.find().skip(15).limit(5);
+db.productos.find().skip(20).limit(5);
