@@ -1,5 +1,5 @@
 # Apuntes Mongo DB
-
+!!! Vigila amb el nom de la db i de la taula/collection.
 
 ## INTRODUCCIÓ
 
@@ -42,6 +42,23 @@ db.productos.find({"categories": ["macbook", "notebook"]});
 Que tingui una:
 ```js
 db.productos.find({"categories": "watch"});
+```
+
+#### Afegir element - `$push`
+Per afegir un element utilitzem el .push() com a JS. Amb la diferència que aquí hem de fer un UPDATE:
+```js
+db.products.updateOne(
+	{ "name": "MacBook"},
+	{ $push: { "categories": "power"}}
+)
+```
+
+#### Eliminar element - `$pop`
+```js
+db.products.updateOne(
+	{ "name": "MacBook"},
+	{ $pop: { "categories": 1}}
+)
 ```
 
 
@@ -88,3 +105,45 @@ db.productos.find({"categories" : "iphone"}, {"stock": 0, "picture": 0});
 
 
 ## UPDATE
+
+### UPDATE ONE
+Per actualitzar un document (fila).
+```js
+db.productos.updateOne(
+	{ "name": "Mac mini"},
+	{ $set: { "stock": 50}}
+)
+```
+### UPDATE MANY
+Per actualitzar diversos documents (files).
+```js
+db.productos.updateMany(
+    {"price": {$gt : 2000}},
+    {$push: {"categories": "expensive"}}
+)
+```
+
+## DELETE
+```js
+db.productos.deleteOne({"_id": ObjectId("6825034c332cbfec6b167173")});
+```
+```js
+db.productos.deleteMany({"categories": "tv"});
+```
+
+## SORT
+
++ Si el criterio utilizado para una propiedad es **1** ordena de forma ascendente
++ Si el criterio utilizado para una propiedad es **-1** ordena de forma descendente
+
+Ordenar números:  
+```js
+db.productos.find({}, {name:1, _id: 0}).sort({name: 1})
+```
+
+Ordenar strings:  
+Com passa a JS, per ordenar strings hem d'utilitzar una altra manera:
+```js
+db.products.find({}, {name:1, _id: 0}).collation({ locale: 'en_US', strength: 1 }).sort({name: 1})
+```
+
