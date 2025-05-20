@@ -98,10 +98,17 @@ db.productos.find({"categories" : "iphone"}, {"stock": 0, "picture": 0});
 + BETWEEN  AND -> db.productos.find({"price": {$lte : 1000, $gte: 500}}); //[500-1000]
 
 + IN -> db.productos.find( { "price": { $in: [399, 699, 1299]}});
++ NOT IN --> db.students.find({"birth_year": {$nin: [1970, 1980, 1990]}});
 
 
 + AND -> db.productos.find({$and: [{"stock": 200}, {"categories": "iphone"}]});
 + OR -> db.productos.find({$or: [{"stock": 329}, {"categories": "tv"}]});
+
++ == --> db.students.find({"birth_year": {$eq: 1990}});
++ != --> $ne:
+
++ PARELL --> db.students.find({"birth_year": {$mod: [2, 0]}});
++ IMPAR --> db.students.find({"birth_year": {$mod: [2, 1]}});
 
 
 ## UPDATE
