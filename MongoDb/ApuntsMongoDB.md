@@ -75,8 +75,12 @@ db.productos.find({name : /iPhone 7/})
 db.productos.find({name : /iPhone 7/i}) //i per ser incasensitive
 ```
 
+![TIP] Per posar que **NO** compleixi:  
+```js
+db.movieDetails.find({"plot": {$not: /Bilbo/i}}).count();
+```
 
-## FIND -> MOSTRAR
+## PROJECCIONS
 Puc a més decidir quins camps mostrar en el segon paràmetre de .find(). Si no poso res em mostrarà tots.
 ```js
 db.productos.find({"price": 2399}, {"name" : 1}); //mostro només name --  0-> no mostrar, 1-> mostrar
