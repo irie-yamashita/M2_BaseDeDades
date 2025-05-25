@@ -1,5 +1,7 @@
 //https://github.com/nisnardi/comunidad-it-js/blob/master/contenido/mongodb.md
 
+//-correccions: find amb arrays, cursors
+
 /*Ejercicio: 01*/
 
 // Conectarse al cliente de MongoDB
@@ -38,10 +40,10 @@ mongo catalogo
 mongo catalogo
 
 //Buscar todos los documentos de la colección `productos`
-db.productos.find()
+db.productos.find();
 
 //Buscar el documento que tiene la propiedad `name` con el valor `MacBook Air`
-db.productos.find({ "name": "MacBook Air" })
+db.productos.find({ "name": "MacBook Air" });
 
 
 
@@ -82,17 +84,17 @@ db.productos.insertMany([
 {"name": "iPhone X"},
 {"name": "iPhone SE"},
 {"name": "iPhone 7"}
-])
+]);
 
 
 //Listar todos los documentos de la colección productos
-db.productos.find().pretty()
+db.productos.find().pretty();
 
 //Buscar el docuemnto que tiene la propiedad name con el valor iPhone 7
-db.productos.find({name : /iPhone 7/}) //expressió regular
+db.productos.find({name : "iPhone 7"}); //expressió regular
 
 //Buscar el documento que tiene la propiedad name con el valor MacBook
-db.productos.find({name : /MacBook/})
+db.productos.find({name : "MacBook"});
 
 
 
@@ -102,17 +104,17 @@ db.productos.find({name : /MacBook/})
 mongo catalogo
 
 //Borrar la colección productos
-db.productos.drop()
+db.productos.drop();
 
 /*show collections*/
 
 //Borrar la base de datos catalogo
-db.dropDatabase()
+db.dropDatabase();
 
 //Crear la base de datos catalogo y colección productos de nuevo
 use catalogo
 
-db.createCollection("productos")
+db.createCollection("productos");
 
 //Insertar los siguientes documentos utilizando un sólo comando de MongoDB
 /*
@@ -140,8 +142,7 @@ db.productos.insertMany([
 
 
 //Buscar el producto que tiene la propiedad name con el valor iPhone X
-db.productos.find({"name": /iPhone X/})
-db.productos.find({"name":{$regex:"iPhone 7"}})
+db.productos.find({"name": "iPhone X"});
 
 
 /*Ejercicio 06*/
@@ -161,13 +162,13 @@ db.productos.find();
 db.productos.find().pretty();
 
 //Buscar los documentos que tienen la propiedad price con el valor de 329
-db.productos.find({"price": 329}).pretty();
+db.productos.find({"price": 329});
 
 //Buscar los documentos que tienen la propiedad stock con el valor de 100
-db.productos.find({"stock": 100}).pretty();
+db.productos.find({"stock": 100});
 
 //Buscar los documentos que tienen la propiedad name con el valor de Apple Watch Nike+
-db.productos.find({"name": 'Apple Watch Nike+'}).pretty();
+db.productos.find({"name": 'Apple Watch Nike+'});
 
 
 
@@ -180,7 +181,11 @@ mongo catalogo
 db.productos.find({"name": "1", "price": 1});
 
 //Buscar los productos que tienen las categorías macbook y notebook
-db.productos.find({"categories": ["macbook", "notebook"]});
+db.productos.find({"categories": ["macbook", "notebook"]});  //aquí NOMÉS agafarà els que tenen els 2 (no més). Si vols més: $ALL o $AND
+/*
+    db.products.find({ "categories": { $all: ["macbook", "notebook"] } });
+    db.products.find({$and: [{ "categories": "macbook" },{ "categories": "notebook" }]});
+*/
 
 //Buscar los productos que tienen la categoría watch
 db.productos.find({"categories": "watch"});
@@ -220,10 +225,11 @@ db.productos.find({"price": {$lt : 500}});
 db.productos.find({"price": {$lte : 500}});
 
 //Buscar los productos que tienen la propiedad price en el rango de 500 a 1000
-db.productos.find({"price": {$lte : 1000, $gte: 500}});
+db.productos.find({"price": {$gte: 500, $lte : 1000}});
 
 //Buscar los productos que tienen la propiedad price con alguno de los siguientes valores 399 o 699 o 1299 (hacer en un solo query)
 db.productos.find( { "price": { $in: [399, 699, 1299]}});
+/*db.products.find({ $or: [{"price": 399}, {"price": 699}, {"price": 1899}]})*/
 
 
 
@@ -237,7 +243,7 @@ mongo catalogo
 db.productos.find({$and: [{"stock": 200}, {"categories": "iphone"}]});
 
 //Buscar los productos que tienen la propiedad price con el valor 329 O tienen la categoría tv (utlizar el operador or)
-db.productos.find({$or: [{"stock": 329}, {"categories": "tv"}]});
+db.productos.find({$or: [{"price": 329}, {"categories": "tv"}]});
 
 
 
@@ -247,7 +253,7 @@ db.productos.find({$or: [{"stock": 329}, {"categories": "tv"}]});
 mongo catalogo
 
 //Actualizar el producto que tiene la propiedad name con el valor Mac mini y establecer la propiedad stock con el valor 50
- db.productos.find({"name" : "Mac mini"},  {"stock": 1}); // Estat inicial: 20
+db.productos.find({"name" : "Mac mini"},  {"stock": 1}); // Estat inicial: 20
 
 db.productos.updateOne(
 	{ "name": "Mac mini"},

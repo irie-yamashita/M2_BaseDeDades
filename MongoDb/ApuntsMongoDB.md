@@ -1,7 +1,8 @@
 # Apuntes Mongo DB
 !!! Vigila amb el nom de la db i de la taula/collection.
 
-- [Inserció](#insercio)
+- [Crear](#CREAR)
+- [Inserció](#INSERT)
 - Consultes
   - [SELECT *](#select-)
   - FIND (Filtració)
@@ -34,8 +35,26 @@
   - [LIMIT](#limit)
   - [SKIP](#skip)
 
+- [Cursors](#CURSORS)
 
 ## INTRODUCCIÓ
+
+### CREAR
++ Crear database:
+```js
+use nomDataBase
+```
+> Comprovació: `show dbs`  
+> [!WARNING]
+> Per poder crear una database has d'estar dintre de mongo (`mongo`).
+
++ Crear collection:
+```js
+db.createCollection('productos');
+```
+> Comprovació: `show collections`  
+> [!WARNING]
+> Per poder crear una col·lecció has d'estar dintre d'una db (`use ____`).
 
 ### INSERT
 + **.insertOne**
@@ -83,6 +102,11 @@ Que tingui alguna:
 db.productos.find({ precio: { $in: [10, 20, 30] } })
 ```
 
+Not in:  
+```js
+db.students.find({"birth_year": {$nin: [1970, 1980, 1990]}});
+```
+
 #### Afegir element - `$push`
 Per afegir un element utilitzem el .push() com a JS. Amb la diferència que aquí hem de fer un UPDATE:
 ```js
@@ -93,10 +117,19 @@ db.products.updateOne(
 ```
 
 #### Eliminar element - `$pop`
+Elimina **l'últim element** d'una array.
 ```js
 db.products.updateOne(
 	{ "name": "MacBook"},
 	{ $pop: { "categories": 1}}
+)
+```
+
+> Si vols que sigui el primer element: -1
+```js
+db.productos.updateOne(
+    {"name": "iPhone SE"},
+    {$pop: {"categories": -1}}
 )
 ```
 
@@ -131,6 +164,10 @@ No mostrar:
 db.productos.find({"categories" : "iphone"}, {"stock": 0, "picture": 0});
 ```
 
+### WHERE - length
+```js
+db.students.find({$where: 'this.firstname.length > 13'})
+```
 
 ### Operadors
 + > -> db.productos.find({"price": {$gt : 2000}});
@@ -206,4 +243,34 @@ db.products.find({}, {name: 1, _id: 0}).limit(2);
 ## SKIP
 ```js
 db.products.find().skip(2).limit(2).pretty();
+```
+
+
+## DROP
+
++ Eliminar collection
+```js
+db.people.drop();
+```
+
++ Eliminar db
+```js
+db.dropDatabase()
+```
+> Has d'estar en la base de dades que vols eliminar (use ____)
+
+
+## CURSORS
+```js
+//Buscar todos los documentos de la colección productos utilizando un cursor
+var cursor = db.productos.find();
+cursor.next();
+cursor.next();
+cursor.next();
+
+
+//Iterar sobre los documento utilizando hasNext y next para cada documento /*!!!!*/
+while ( cursor.hasNext() ) {
+    printjson( cursor.next() );
+} 
 ```

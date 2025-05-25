@@ -1,5 +1,13 @@
 /*EA2. Consultes avançades en MongoDB - Irie Yamashita*/
 
+/*
+
+$nin, $exists, regex
+
+Correcció:
+En comptes de $eq, utilitza directament :
+*/
+
 /*Utilitzant la col·lecció “Students” que vam importar en l’EA1 realitza les següents consultes:*/
 
 //mongo itb
@@ -56,32 +64,50 @@ db.students.find({"birth_year": {$mod: [10, 0]}});
 db.students.find({"phone_aux": {$ne: ""}});
 
 //17. Busqueu els estudiants que no tinguin segon cognom
-db.students.find({"lastname2": {$eq: ""}});
+db.students.find({"lastname2": {$eq: ""}}); //db.students.find({lastname2: ""})
+/*
+    !!! Diferent a $exists-> aquest directament no existeix el camp
+    db.students.find({lastname2: {$exists:false}})
+*/
+
 
 //18. Busqueu els estudiants que tinguin telèfon auxiliar i un sol cognom
 db.students.find({"phone_aux": {$ne: ""}, "lastname2": {$eq: ""}});
+/*Correcció: db.students.find({lastname2:"", phone_aux:{$ne:""}});*/
+
 
 //19. Busqueu els estudiants que tinguin un email que acabi en .net
 db.students.find({"email": /\.net$/});
 db.students.find({"email": {$regex:"\.net$"}});
 
+
 //20. Busqueu els estudiants que tinguin un nom que comenci per vocal
 db.students.find({"firstname": /^[AEIOU]/i});
 db.students.find({"firstname": {$regex:"^[AEIOU]", $options:"$i"}});
 
+
 //21. Busqueu els estudiants que tinguin un nom més llarg de 13 caràcters
 db.students.find({"firstname": /.{13,}/});
 db.students.find({"firstname": {$regex:".{13,}", $options:"$i"}});
+/*Correcció: db.students.find({$where: 'this.firstname.length > 13'})*/
+
 
 //22. Busqueu els estudiants que tinguin un nom amb més de 3 vocals
 db.students.find({"firstname": /[aeiuo]{3,}/i});
 db.students.find({"firstname": {$regex:"[aeiuo]{3,}", $options:"$i"}});
+
+//CORRECCIó: db.students.find({firstname:/[aeiou].*[aeiou].*[aeiou].*[aeiou]/i})
+
 
 //23. Busqueu els estudiants que tinguin un dni que comenci per lletra
 db.students.find({$and: [{"dni": /^[A-Z]/i}, {"dni" : {$ne: "NULL"}}]});
 
 //24. Busqueu els estudiants que tinguin un dni que comenci i acabi per lletra
 db.students.find({$and: [{"dni": /^[A-Z].*[A-Z]$/i}, {"dni" : {$ne: "NULL"}}]});
+
+/*Correcció: db.students.find({$and:[{dni:/^[a-z]/i}, {dni:/[a-z]$/i},{dni:{$ne:"NULL"}}]})*/
+
+
 
 //25. Busqueu els estudiants que tinguin telèfon que comenci per 622
 db.students.find({"phone": /^622/});

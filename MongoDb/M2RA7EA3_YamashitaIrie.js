@@ -1,6 +1,6 @@
 
 /*1. Inserció de dades. Inserta els següents documents dins la col·lecció “movieDetails”.*/
-use video
+//use video
 db.movieDetails.find();
 
 //a
