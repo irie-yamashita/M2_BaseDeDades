@@ -1,6 +1,40 @@
 # Apuntes Mongo DB
 !!! Vigila amb el nom de la db i de la taula/collection.
 
+- [Inserció](#insercio)
+- Consultes
+  - [SELECT *](#select-)
+  - FIND (Filtració)
+    - [Literal](#literal)
+    - [Arrays](#arrays)
+    - [$in](#in)
+    - [$push (Afegir element)](#afegir-element---push)
+    - [$pop (Eliminar element)](#eliminar-element---pop)
+    - [Expressions regulars (`$regex`, `/ /`)](#regex)
+- Projeccions
+  - [Mostrar camps específics](#projeccions)
+  - [Ocultar camps](#projeccions)
+- Operadors
+  - [Comparació (`>`, `>=`, `<`, `<=`)](#operadors)
+  - [Rang (`BETWEEN AND`)](#operadors)
+  - [Inclusió (`IN`, `NOT IN`)](#operadors)
+  - [Lògics (`AND`, `OR`)](#operadors)
+  - [Igualtat (`==`, `!=`)](#operadors)
+  - [Mòdul (`PARELL`, `IMPAR`)](#operadors)
+- Actualització
+  - [UPDATE ONE](#update-one)
+  - [UPDATE MANY](#update-many)
+- Eliminació
+  - [DELETE ONE](#delete)
+  - [DELETE MANY](#delete)
+- Ordenació
+  - [SORT (ascendent i descendent)](#sort)
+  - [Ordenar cadenes amb `collation`](#sort)
+- Limitació i paginació
+  - [LIMIT](#limit)
+  - [SKIP](#skip)
+
+
 ## INTRODUCCIÓ
 
 ### INSERT
@@ -42,6 +76,11 @@ db.productos.find({"categories": ["macbook", "notebook"]});
 Que tingui una:
 ```js
 db.productos.find({"categories": "watch"});
+```
+
+Que tingui alguna:
+```js
+db.productos.find({ precio: { $in: [10, 20, 30] } })
 ```
 
 #### Afegir element - `$push`
