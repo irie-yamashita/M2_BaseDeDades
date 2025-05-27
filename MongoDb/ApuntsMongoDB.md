@@ -236,11 +236,12 @@ db.products.find({}, {name:1, _id: 0}).collation({ locale: 'en_US', strength: 1 
 
 
 ## LIMIT
-´´´js
+```js
 db.products.find({}, {name: 1, _id: 0}).limit(2);
-´´´
+```
 
 ## SKIP
+
 ```js
 db.products.find().skip(2).limit(2).pretty();
 ```
