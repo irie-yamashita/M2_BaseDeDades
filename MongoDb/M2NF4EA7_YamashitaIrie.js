@@ -131,19 +131,9 @@ db.people.find({"registered": {$gte: '2001-01-01', $lte: '2018-12-31'}, "company
 db.people.find({"tags": {$nin: ["tempor", "nulla"]}}, {"tags": 1, "_id":0}).count(); //!!!
 
 //f) Mostra totes les persones de sexe femeni que tinguin 3 amics i que no estiguin actives. Mostra els resultats en un format "bonic".
-db.people.find({
-  "gender": "female",
-  "isActive": false,
-  $where: "this.friends.length === 3"
-}).pretty(); //!!!!!
+db.getCollection('people').find({friends:{$size:3}, isActive:false, gender:"female" }).pretty();
 
-db.people.find({
-  "gender": "female",
-  "isActive": false,
-  "$expr": { "$eq": [{ "$size": "$friends" }, 3] }
-}).pretty();
-
-
+//!!!! friends:{$size:3}
 
 /*Exercici 3. Actualitzacions*/
 

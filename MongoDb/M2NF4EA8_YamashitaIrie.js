@@ -107,7 +107,7 @@ db.restaurants.aggregate([
 db.restaurants.find();
 
 db.restaurants.aggregate([
-    {$unwind: "$address"},
+    {$unwind: "$address"},//!!! NO FA FALTA unwind!!!!!
     {
         $group: {
             _id: {"CODI_POSTAL": "$address.zipcode"},
@@ -119,7 +119,7 @@ db.restaurants.aggregate([
 
 //10) De la col·lecció "restaurants" mostra quants restaurants hi ha en cada codi postal.
 db.restaurants.aggregate([
-    {$unwind: "$address"},
+    {$unwind: "$address"}, //!!! NO FA FALTA unwind!!!!!
     {
         $group: {
             _id: {"CODI_POSTAL": "$address.zipcode"},
